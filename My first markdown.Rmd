@@ -1,0 +1,41 @@
+---
+title: "My first markdown"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages('gapminder')
+# install.packages('tidyverse')
+# install.packages('tidylog')
+
+library('tidyverse')
+```
+
+### Laden der Daten
+
+
+```{r}
+# Daten aus dem Paket "Gapminder" laden
+df <- gapminder::gapminder
+
+ncol(df)
+nrow(df)
+
+head(df)
+
+max(df$year)
+
+df1 <- subset(df, df$year==2007)
+
+median(df1$lifeExp)
+
+df1$lifeExp %>% 
+  mean() %>% 
+  round(2)
+
+hist(df$lifeExp)
+
+```

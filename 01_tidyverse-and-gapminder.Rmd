@@ -1,0 +1,369 @@
+---
+title: "Gapminder Visualisierung"
+author: "Philipp Mendoza"
+date: Oct 19. 2021
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+# Global Chunk Options
+knitr::opts_chunk$set(
+  # tidy = T, # stellt den code nach tidy styleguide dar (package "formatR" muss installiert sein)
+  warnings = F, # keine Warnungen sichtbar machen
+  comment = "", # Zeichen mit dem output beginnt (default "##")
+  cache = T, # speichert alle unveränderten Ergebnisse zwischen um kleinere Veränderungen schneller zu knitten
+  collapse = T) # allen Output nach dem Code darstellen
+
+## ========================================================##
+##                                                         ##
+##   R tidyverse                                           ##
+##   dhbw R workshop by Philipp Mendoza                    ##
+##                                                         ##
+##   Email: p.m.mendoza@uva.nl                             ##
+##   Twitter: @philipp_mendoza                             ##
+##                                                         ##
+## ========================================================##
+```
+
+Dieses Skript + Beschreibungen führen ein in die Datenmanipulation & Visualisierung in R, tidyverse. Der Großteil dieser Inhalte wurde in vorhergehenden Kursen für python mit numpy, pandas, seaborn und matplotlib besprochen. Daher hier recht zügig die Beispiele in R.
+
+
+## Laden von Packages
+
+Ähnlich wie in Python stützen sich viele R Analysen auf zusätzliche Packages. In unserem Kurs verwenden wir die packages im `tidyverse` für die Datenhandhabung und Visualisierung (im Spezifischen `ggplot` and `dplyr`).
+
+
+```{r pkgs, message=F}
+# mit "message = FALSE" kann das printen des Packageladens verhindert werden!
+
+# Needed packages:
+# install.packages("kableExtra") # für schöne Tabellen
+# install.packages("formatR") # zur schönen Formatierung der code chunks beim knitten
+# install.packages('tidyverse') # falls ein Paket noch nicht installiert ist
+# install.packages('gapminder') # für die gapminder Daten
+
+library("tidyverse") # Wir laden tidyverse weil wir in diesem 'Environment' programmieren wollen
+```
+
+Tidyverse ist eine Kollektion unterschiedlicher statistischer Pakte. Worauf wir uns fokussieren sind die unterschiedlichen data wrangling Funktionen (`dplyr`) und Datenvisualisierungs Befehle (`ggplot`, siehe weiter unten):
+```{r tidyargs, echo = F, tidy=F}
+Funktion <- c(
+  "mutate()",
+  "select()",
+  "filter()",
+  "group_by()",
+  "rowwise()",
+  "ungroup()",
+  "summarize()",
+  "distinct()",
+  "tally()",
+  "case_when()",
+  "pivot_longer()",
+  "pivot_wider()"
+)
+Aktion <- c(
+  "eine neue Variable erstellen",
+  "Variablen behalten (oder fallen lassen -var)",
+  "Reihen halten (oder fallen lassen !)",
+  "Teilmengen/Gruppen in Daten deklarieren",
+  "alle folgenden Operationen werden nur in der jeweiligen Zeile durchgeführt, dies ist funktionsgleich zu einer Gruppierung",
+  "Gruppierung der Daten aufheben (auch für rowwise)",
+  "die Daten zusammenfassen, und zwar gruppenweise, falls sie deklariert wurden",
+  "gibt nur Zeilen zurück, die eindeutig sind",
+  "Zählung (nach Gruppen, wenn group_by() angewendet wurde)",
+  "wird für die 'Rekodierung' von Variablen verwendet, die oft mit mutate()",
+  "'verlängert' die Daten, indem die Anzahl der Zeilen erhöht und die Anzahl der Spalten verringert wird",
+  "'verbreitert' die Daten, indem die Anzahl der Spalten erhöht und die Anzahl der Zeilen verringert wird."
+)
+data.frame(Funktion, Aktion) %>%
+  kableExtra::kable() %>%
+  kableExtra::kable_styling(font_size = 11)
+```
+
+## Laden der Daten
+Zur Veranschaulichung der `tidyverse` Funktionen rekonstruieren wir die Visualisierung von [Hans Rosling](https://www.youtube.com/watch?v=E6t7ZZ_FY4o).
+
+Extrahieren der Daten von dem `gapminder` package.
+```{r gapmind}
+# install.packages('gapminder') # manche Pakete kommen mit Daten
+library("gapminder")
+df <- gapminder::gapminder
+```
+
+
+### `select` columns \& `filter` rows
+
+Statt mehrere Datenmanipulationen zugleich in eingebetteten Klammern durchzuführen verwendet der `tidy` R "**slang**" die 'pipe': `%>%`, die ihr mit dem Tastenkürzel `ctrl/cmd+shift+m` einfügen könnt. 
+
+Um spezifische Zeilen und Spalten des Datensatzes auszuwählen können wir nun statt...
+
+```{r base_slc_filt, eval=F}
+# Base R
+head(df[df$continent=="Asia" & df$year>1980, c("country", "pop")])
+```
+
+...folgende pipe schreiben:
+
+```{r tidy_slc_filt}
+# Tidy R
+df %>%
+  filter(continent == "Asia", year>1980) %>%   # Zeilen
+  select(country, pop) %>%  # Spalten, hier könnten wir auch bspw. `.data$country` schreiben!
+  head()
+```
+
+Tidy code ist manchmal länger, jedoch meist übersichtlicher.
+
+Das Ergebnis der Evaluierung des vorhergehenden Befehls wird weiter 'gepiped' in das erste Argument des darauffolgenden Befehls. 
+
+Im Vergleich zu base R müssen wir innerhalb der pipe meist nicht explizit auf das Ursprungsobjekt Verweisen. Sollten wir dies wollen, könnten wir das mit einem simplen Punkt (".") tun, sollten wir auf eine Variable in einem Datensatz zugreifen mit .data$varname.
+
+
+<!-- # ```{r eval = T} -->
+<!-- # # Getting the five highest life expectancies in 2007 -->
+<!-- # tail(sort(round(df$lifeExp[df$year == 2007], 2)), 5) -->
+<!-- #  -->
+<!-- #  -->
+<!-- # ``` -->
+
+__1. Aufgabe:__ _Versuche die fünf höchsten Lebenserwartungen im Jahr 2007 mittels der tidy pipe zu ermitteln! Hierbei kann der schlussendliche output auch anders als oben aussehen!_
+<!-- (Tip: `sort` funktioniert nur mit Vektoren, da wir in der tidy pipe meist mit data frames arbeiten verwenden wir `arange(varname)` um die Zeilen des df zu sortieren). -->
+
+
+```{r test, include = F}
+df %>% 
+  filter(year==2007) %>% 
+  select(lifeExp) %>% 
+  arrange(lifeExp) %>% 
+  round(2) %>% 
+  tail(5)
+
+```
+
+
+## Daten **Transformation**
+
+Mit mutate können wir variablen in den data frames manipulieren:
+
+```{r mutate}
+df <- df %>% 
+  # Erstellen einer Einwohner in Millionen variable
+  mutate(
+    popmil = pop / 1000000
+  )
+```
+
+
+__2. Aufgabe:__ Erstelle eine neue variable (`gdplog10`), in der das BIP Variable die logarithmiert ist! 
+
+```{r gdplog, include = F}
+df <- df %>%
+  mutate(
+    gdplog10 = log(gdpPercap)
+  )
+```
+
+Deine neue Variable sollte folgende Werte haben:
+
+```{r gdploginspect}
+df$gdplog10 %>% summary()
+```
+
+### ifelse und case_when
+
+Wie bereits schon gestern kurz erwähnt können wir mit `ifelse()` konditionelle Variablentransformierungen durführen. Hier beispielsweise eine variable die anzeigt ob ein Land OECD Gründungsmitglied war:
+
+```{r ifelse}
+# OECD founding members (https://en.wikipedia.org/wiki/OECD)
+oecdfm <- c("Austria", "Belgium", "Canada", "Denmark", "France", "Germany", "Greece", "Iceland", "Ireland", "Italy", "Luxembourg", "Netherlands", "Norway", "Portugal", "Spain", "Sweden", "Switzerland", "Turkey", "United Kingdom", "United States")
+
+# Transformation
+df <- df %>% 
+  mutate(
+    oecd = ifelse(country %in% oecdfm, "founding OECD member", "other countries")
+  )
+
+```
+
+Statt mehrere ifelse Befehle ineinander zu verschachteln können wir bei mehreren möglichen Ausprägungen `case_when()` verwenden. Hier erstellen wir beispielsweise eine variable die angibt in welchem Quadranten sich eine Beobachtung befindet (links oben würde bspw. bedeuten niedriges BIP und hoche Lebenserwartung). Wir können alle beobachtungen entlang der jeweiligen Mittelwerte teilen.
+
+
+```{r case_when}
+df <- df %>% 
+  mutate(
+    # Berechnen der Mittelwerte der x und y achse
+    mgdp = mean(gdpPercap),
+    mlif = mean(lifeExp),
+    quadrant = case_when(# mit der Tilde ~ legen wir den neuen Wert für den Fall dass die definierten Konditionen erfüllt werden.
+      gdpPercap < mgdp & lifeExp < mlif ~ "Low LE, Low GDP", 
+      gdpPercap > mgdp & lifeExp < mlif ~ "High LE, Low GDP",
+      gdpPercap > mgdp & lifeExp > mlif ~ "High LE, High GDP",
+      gdpPercap < mgdp & lifeExp > mlif ~ "Low LE, High GDP",
+      TRUE ~ NA_character_ # diese Zeile fängt alle potentiell übrigen Fälle ein
+    )
+  )
+```
+
+
+### group_by und summarise
+
+Zuletzt kommt es öfter vor, dass wir gruppierte Operationen durchführen wollen (d.h. für subsets unseres datafarmes). Hier kommt vor allem `group_by` und `summarise` öfter zum Zug; group_by kann aber auch in Verbindung mit anderen Befehlen (z.B. `mutate`) problemlos verwendet werden.
+
+_Wichtig ist bei der Verwendung von `group_by` nur, die Gruppierung im Anschluss mit `ungroup` wieder aufzuheben._
+
+Wir könnten beispielsweise die durchschnittliche Lebenserwartung aller Länder über die Jahre hinweg abbilden:
+
+```{r group_sum}
+# install.packages('ggthemes')
+library(ggthemes) # mehr vorprogramierte plot designs!
+
+df %>% 
+  # alle folgenden Operationen geschehen innerhalb der jeweiligen Jahreteilsegmente / untergruppen
+  group_by(year) %>% 
+  summarise(
+    LE=mean(lifeExp)
+  ) %>% 
+  # Sehr simple Visualisierung hierfür
+  ggplot(aes(x=year,y=LE)) + 
+  theme_minimal() +# in ggplot gibt es mehrere vorprogramierte designs, siehe weiter unten
+  geom_point()
+```
+
+Ggplot hat bereits ein paar vorprogramierte designs, das package `ggthemes` hat aber noch viel mehr! Sobald das packet installiert und geladen ist, sind diese dir über normale `them_*` Befehle wie `theme_minimal()` zugägnlich!
+
+
+__Aufgabe:__
+Installiere und lade das Paket, und finde das theme mit dem ich die folgende Visualisierung gemacht habe. (Tipp ich habe auch den `shape` der Punkte verändert!)
+
+```{r themetest, echo = F}
+df %>% 
+  group_by(year) %>% 
+  summarise(
+    LE=mean(lifeExp)
+  ) %>% 
+  ggplot(aes(x=year,y=LE)) + 
+  theme_wsj() +
+  geom_point(shape = 15)
+```
+
+
+
+## Daten **Visualisierung** basierend auf [Gina Reynolds](https://evamaerey.github.io/tidyverse_in_action/tidyverse_in_action.html#18)
+
+### ggplot
+
+Der Grundsatz der Grammer of Graphics dass jeder Plot mit layern (Ebenen) aufgebaut wird.
+Für gewöhnlich coden wir mehrere Ebenen auf einmal, hier aber ein auseinenadergenommener Aufbau eines ggplots:
+
+```{r ggplot}
+# Wir spezifizieren die Daten
+ggplot(data = gapminder) +  
+# die X position soll das BIP pro Einw. darstellen
+  aes(x = gdpPercap) +  # x position
+# die y position soll die Lebenserwartung darstellen
+  aes(y = lifeExp) +  
+# die geometrischen Formen nehemen die zuvor in den 'mappings' definierten Positionen über, können aber auch eigens formulierte Positionen haben.
+  geom_point()
+```
+
+
+Für eine detailreichere Vorstellung siehe: [grammar of graphcs guide](https://evamaerey.github.io/ggplot2_grammar_guide/ggplot2_grammar_guide#1).
+
+
+Ggplot Objekte können übrigens genauso abgespeichert werden:
+
+```{r dviz}
+p <- df %>%
+  ggplot(
+    aes(x = gdpPercap, 
+        y = lifeExp, 
+        colour = continent # je nach dem ob aesthetics global (im ggplot befehl) oder lokal (in einem bestimmten geom) definiert werden, gelten sie auch für alle bzw. nur die spezifische Ebene. Da wir hier nur Punkte haben macht dies keinen großen Unterschied!
+        )
+    ) +
+  # Mit labs können wir unsere Plot Beschriftungen anpassen!
+  labs(
+    x = "BIP",
+    y = "Lebenserwartung",
+    colour = "Kontinent"
+  ) +
+  theme_minimal()
+```
+
+Einmal abgespeichert können wir das ggplot objekt jederzeit abrufen und mit weiteren Ebenen und Befehlen erweitern!
+
+```{r callobj}
+p + geom_point(alpha = 0.3)
+```
+
+
+Mit `facet_wrap(~varname)` können wir unsere Visualisierung recht einfach auf Untergruppen aufteilen.
+
+```{r facetwrap}
+p + facet_wrap(~oecd) + geom_point(alpha = 0.3)
+```
+
+__Aufgabe:__ Füge eine weitere sinnvolle Informationsebene zu der letzten Visualisierung hinzu.
+
+
+## Let's get funky!
+
+`gganimate` ist ein cooles package um Daten dynamisch mit einem gif oder Ähnlichem darzustellen!
+Zuerst erstellen wir wieder unseren gewohnten Graphen, nun mit der Addition der Jahreszahl (diese soll sich über das GIF hinweg verändern!).
+
+```{r prepanimate}
+q <- p + geom_point(aes(size = popmil), alpha = 0.3) +
+  geom_text(
+    x = 90000, y = 30,
+    aes(label = as.character(year)),
+    size = 15, col = "black"
+  )
+q
+```
+
+Und nun die Anmiation. hierfür erstellt ggplot!
+```{r animate}
+# install.packages("gganimate")
+anim <- gganimate::animate(q + gganimate::transition_time(year),
+  width = 700, height = 400, fps = 20
+)
+anim
+```
+
+
+```{r savegif, eval = F}
+# Alternativ können wir das GIF auch in unserem Arbeitsverzeichnis speichern:
+# install.packages('magick')
+# magick::image_write(anim, path = "plots/03_gapminder-animation.gif")
+```
+
+
+Alternative Visualisierung derselben Daten, diesmal mit logarithmiertem BIP.
+
+```{r bycont, include = T}
+df %>%  
+  ggplot(aes(x = gdpPercap/1000, y = lifeExp, size = popmil, colour = continent)) +  
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_size(range = c(2, 12)) +  
+  scale_x_log10() +  # statt die logarithmierte x-achse zu verwenden (und dann die labels anpassen zu müssen, können wir manche scalare Transformationen auch hier in ggplot durchühren!)
+  theme_tufte() +
+  # Here comes the gganimate specific bits
+  labs(x = 'GDP per capita in 1000€',  
+       y = 'life expectancy',
+       # hier wird das glue package verwendet um in den Text innerhalb der geschwungenen Klammer dynamisch zu verändern  
+       title = 'Year: {frame_time}'
+       ) -> p;p 
+
+anim2 <- gganimate::animate(
+  p + 
+    gganimate::transition_time(year) +  
+    # gganimate::ease_aes('linear') + 
+    aes(group = country),
+  width = 700, height = 400, fps = 20
+  )
+anim2
+```
+
