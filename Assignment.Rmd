@@ -1,0 +1,62 @@
+---
+title: "Assignment"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+Autor: Ferdinand Bubeck,
+Ort: DHBW Karlsruhe,
+Kurs: WWI19B4,
+Vorlesung: Social Network Analysis
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Mögliche Fragestellungen
+- Welche Produkte werden nur in Verbindung mit anderen Produkten gekauft?
+- Welche Produkte sind zentral?
+
+
+### Laden der Libraries
+```{r libraries, message=FALSE, warning=FALSE}
+library("tidyverse")
+library("tidygraph")
+```
+
+### Laden der Daten
+```{r data}
+amazon <- read.table("Data/Amazon0302.txt")
+```
+
+### Data Exploration
+```{r exploration}
+head(amazon)
+```
+
+### Data Manipulation
+```{r manipulation}
+dat <- amazon %>% 
+  rename(
+    from = V1,
+    to = V2
+  ) %>% 
+  mutate(
+    from = from+1,
+    to = to+1
+  )
+```
+
+### Netzfitting
+```{r net}
+net <- as_tbl_graph(dat)
+
+net
+```
+
+### Data Visualization
+```{r viz}
+
+```
+
+
+
