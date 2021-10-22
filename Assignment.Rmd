@@ -21,6 +21,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r libraries, message=FALSE, warning=FALSE}
 library("tidyverse")
 library("tidygraph")
+library("igraph")
+library("ggraph")
 ```
 
 ### Laden der Daten
@@ -31,6 +33,9 @@ amazon <- read.table("Data/Amazon0302.txt")
 ### Data Exploration
 ```{r exploration}
 head(amazon)
+
+# Count NAs
+which(is.na(amazon))
 ```
 
 ### Data Manipulation
@@ -44,19 +49,62 @@ dat <- amazon %>%
     from = from+1,
     to = to+1
   )
+
 ```
 
-### Netzfitting
+### Fitting Graph Object
 ```{r net}
 net <- as_tbl_graph(dat)
 
-net
+
+degree <- degree(net)
+
+# Adjacency Matrix
+adjacencyMatrix <- net[]
+
 ```
 
 ### Data Visualization
-```{r viz}
+```{r viz, message=FALSE, warning=FALSE}
+degree_df <- as.data.frame(degree)
+
+
+ggplot(data = degree_df, aes(x=degree))+
+  geom_bar(fill = "blue", colour = "blue", alpha=.5)+
+  scale_y_continuous(trans='log2')+
+  xlim(0,150)+
+  labs(title = "Histogram of Node-Degrees", subtitle = "Amazon Network Analyis", y = "Frequency (log2 scale)", x = "Degree of Vertices (xlim = 150)")+
+  theme_classic()
+
+
 
 ```
+
+### Experimental Data
+```{r message=FALSE, warning=FALSE}
+dat_exp <- dat[1:200,]
+
+net_exp <- as_tbl_graph(dat_exp)
+
+net_exp <- net_exp %>% 
+  activate(nodes) %>% 
+  mutate(
+    degree = centrality_degree()
+  )
+
+# network diagramm
+ggraph(net_exp, layout = 'kk', maxiter = 100) + 
+  geom_node_point(aes(size=degree)) + 
+  geom_edge_link(alpha = 0.25) +
+  theme_graph()
+
+# coord diagramm
+ggraph(net_exp, layout = 'linear', circular = TRUE) + 
+  geom_node_point() +
+  geom_edge_arc() +
+  theme_graph()
+```
+
 
 
 
