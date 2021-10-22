@@ -93,16 +93,23 @@ net_exp <- net_exp %>%
   )
 
 # network diagramm
-ggraph(net_exp, layout = 'kk', maxiter = 100) + 
-  geom_node_point(aes(size=degree)) + 
-  geom_edge_link(alpha = 0.25) +
+ggraph(net_exp, layout = 'fr', maxiter = 100) + 
+  geom_node_point() + 
+  geom_edge_link(alpha = .4) +
   theme_graph()
+
+ggraph(net_exp, layout = 'kk', maxiter = 100) + 
+  geom_node_point() + 
+  geom_edge_link(alpha = .4) +
+  theme_graph()
+
 
 # coord diagramm
 ggraph(net_exp, layout = 'linear', circular = TRUE) + 
   geom_node_point() +
-  geom_edge_arc() +
+  geom_edge_arc(alpha = .4) +
   theme_graph()
+
 ```
 
 
