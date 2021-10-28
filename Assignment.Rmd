@@ -1,21 +1,48 @@
 ---
-title: "Assignment"
-output: html_document
-editor_options: 
+title: Amazon Network Analysis
+subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analyis' von Philipp
+  Mendoza an der DHBW Stuttgart
+author: Ferdinand Bubeck
+output:
+  pdf_document:
+    highlight: tango
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+  html_document:
+    highlight: tango
+    number_sections: yes
+    theme: united
+    toc: yes
+    toc_depth: 2
+
+editor_options:
   chunk_output_type: console
+toc-title: Inhaltsverzeichnis
 ---
-Autor: Ferdinand Bubeck,
-Ort: DHBW Karlsruhe,
-Kurs: WWI19B4,
-Vorlesung: Social Network Analysis
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-### Mögliche Fragestellungen
+\newpage
+# Einleitung
+
+## Zielsetzung
+
+## Vorgehensweise
+Als Vorgehensweise wird in diesem Projekt das für das Feld Data Science etablierte Standard-Vorgehen CRISP-DM gewählt (Cross Industry Standard Process for Data Mining). In mehreren Phasen werden so von dem richtigen Verständnis der Daten, dem Data Wrangling und Data Preprocessing bis hin zum Modelfitting und der Evaluation alle entscheidenen Schritte strukturiert durchlaufen, um ein optimales Ergebnis aus den Daten zu generieren. In der Abbildung 1 ist das Vorgehensmodell abgebildet. Da es sich in diesem Projekt um ein PoC handelt, wird die letzte Phase 'Deployment' ausgelassen.
+
+![CRISP-DM (Source: https://statistik-dresden.de/archives/1128))](Data/CRISP-DM_Process_Diagram1.png){width=50%}
+
+
+
+\newpage
+# Hauptteil
+## Business Understanding
+
 - Welche Produkte werden nur in Verbindung mit anderen Produkten gekauft?
 - Welche Produkte sind zentral?
-
 
 ### Laden der Libraries
 ```{r libraries, message=FALSE, warning=FALSE}
@@ -25,12 +52,13 @@ library("igraph")
 library("ggraph")
 ```
 
-### Laden der Daten
+
+### Importieren der Daten
 ```{r data}
 amazon <- read.table("Data/Amazon0302.txt")
 ```
 
-### Data Exploration
+## Data Understanding
 ```{r exploration}
 head(amazon)
 
@@ -38,7 +66,7 @@ head(amazon)
 which(is.na(amazon))
 ```
 
-### Data Manipulation
+## Data Preparation
 ```{r manipulation}
 dat <- amazon %>% 
   rename(
@@ -52,7 +80,7 @@ dat <- amazon %>%
 
 ```
 
-### Fitting Graph Object
+## Modeling
 ```{r net}
 net <- as_tbl_graph(dat)
 
@@ -64,7 +92,7 @@ adjacencyMatrix <- net[]
 
 ```
 
-### Data Visualization
+## Data Visualization
 ```{r viz, message=FALSE, warning=FALSE}
 degree_df <- as.data.frame(degree)
 
@@ -73,15 +101,18 @@ ggplot(data = degree_df, aes(x=degree))+
   geom_bar(fill = "blue", colour = "blue", alpha=.5)+
   scale_y_continuous(trans='log2')+
   xlim(0,150)+
-  labs(title = "Histogram of Node-Degrees", subtitle = "Amazon Network Analyis", y = "Frequency (log2 scale)", x = "Degree of Vertices (xlim = 150)")+
+  labs(title = "Histogram of Node-Degrees", subtitle = "Amazon Network Analysis", 
+       y = "Frequency (log2 scale)", x = "Degree of Vertices (xlim = 150)")+
   theme_classic()
 
 
 
 ```
 
-### Experimental Data
+## Experimental Data
+
 ```{r message=FALSE, warning=FALSE}
+# Subsetting Data
 dat_exp <- dat[1:200,]
 
 net_exp <- as_tbl_graph(dat_exp)
@@ -92,26 +123,36 @@ net_exp <- net_exp %>%
     degree = centrality_degree()
   )
 
+# Data Viz for Subset
 # network diagramm
 ggraph(net_exp, layout = 'fr', maxiter = 100) + 
-  geom_node_point() + 
+  geom_node_point(colour="blue") + 
   geom_edge_link(alpha = .4) +
   theme_graph()
 
 ggraph(net_exp, layout = 'kk', maxiter = 100) + 
-  geom_node_point() + 
+  geom_node_point(colour="blue") + 
   geom_edge_link(alpha = .4) +
   theme_graph()
 
 
 # coord diagramm
 ggraph(net_exp, layout = 'linear', circular = TRUE) + 
-  geom_node_point() +
+  geom_node_point(colour="blue") +
   geom_edge_arc(alpha = .4) +
   theme_graph()
 
 ```
 
+\newpage
+
+# Fazit
+
+## Evaluation der Ergebnisse
+tbd
+
+## kritische Reflexion
+tbd
 
 
 
