@@ -1,10 +1,13 @@
 ---
 title: Amazon Network Analysis
-subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analyis' von Philipp
-  Mendoza an der DHBW Stuttgart
+subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analyis'
 author: Ferdinand Bubeck
+date: "`r Sys.Date()`"
 output:
   pdf_document:
+    fig_caption : true
+    keep_tex : true
+    latex_engine : pdflatex
     highlight: tango
     number_sections: yes
     toc: yes
@@ -15,11 +18,21 @@ output:
     theme: united
     toc: yes
     toc_depth: 2
-
+    
+fontsize : 12 pt
+header-includes: 
+   \usepackage{graphicx}
+   \usepackage{fancyhdr}
+   \pagestyle{fancy}
+   \setlength\headheight{28pt}
+   \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}}
+   \fancyfoot[LE,RO]{Ferdinand Bubeck}
+ 
 editor_options:
   chunk_output_type: console
 toc-title: Inhaltsverzeichnis
 ---
+
 
 
 ```{r setup, include=FALSE}
@@ -54,11 +67,19 @@ library("ggraph")
 
 
 ### Importieren der Daten
+Die Daten stammen aus der Datensatz-Bibliothek der Stanford University und können als .txt unter folgendem Lin heruntergeladen werden. (Link: https://snap.stanford.edu/data/amazon0302.html)
+
+Zum Einlesen der Daten kommt im Folgenden die Funktion \textit{read.table} zum Einsatz.\
+
 ```{r data}
 amazon <- read.table("Data/Amazon0302.txt")
 ```
 
 ## Data Understanding
+Die Daten basieren auf dem Grundsatz "Kunden, die Artikel A gekauft haben, haben auch Artikel B gekauft". Wenn ein Produkt i häufig zusammen mit Produkt j gekauft wird , enthält der Graph eine gerichtete Kante von i nach j .
+
+Um einen ersten Einblick in die Daten zu erhalten, wird mit der Funktion \textit{head} die ersten Zeilen des Datensatzes ausgegeben. Zusätzlich dazu ist es von entscheidender Rolle, die Qualität der Daten zu bewerten. Aus diesem Grund werden alle fehlenden Werte, sogenannte NAs gezählt und ausgegeben.\
+
 ```{r exploration}
 head(amazon)
 
@@ -66,7 +87,11 @@ head(amazon)
 which(is.na(amazon))
 ```
 
+Der Dataframe besteht aus 3 Spalten: einer ID Spalte, und zwei Kantenspalten. Des Weiteren weisen die Daten keine Lücken und fehlenden Werte auf, sodass der komplette Datensatz für das weitere Vorgehen genutzt werden kann.
+
 ## Data Preparation
+Auf Basis der vorangegangen Schritte müssen nun weitere Anpassungen der Daten erfolgen, um damit arbeiten zu können. Zum Einen werden die Kantenspalten von ihren ursprünglichen Namen in sprechendere Bezeichnungen umbenannt. Im gleichen Schritt werden alle Werte um 1 erhöht, sodass keine Nullen mehr existieren.\
+
 ```{r manipulation}
 dat <- amazon %>% 
   rename(
@@ -81,10 +106,16 @@ dat <- amazon %>%
 ```
 
 ## Modeling
-```{r net}
+Nach der Datenbearbeitung kann nun das Netz gefittet werden. Hierzu wird die Funktion \textit{as tbl graph} angewendet, um ein Netz zu erstellen.\
+```{r net, message=FALSE, warning=FALSE, paged.print=TRUE}
 net <- as_tbl_graph(dat)
+net
 
+```
+Die beiden Spalten aus dem Ursprungsdatensatz wurden in ein Netz, bestehend aus 262111 Knoten und 1234877 Kanten, konvertiert. Es handelt sich, wie aus der Zusammenfassung des Netzes zu entnehmen ist, um einen gericheteten Graphen. Die Knotennamen sind in diesem Fall die Ziffern der Kantendaten. Leider liegt dem Autor dieser Arbeit keine Zuordnungsliste von Knotenziffern zu realen Amazonprodukten vor. Aus diesem Grund wird im Folgenden mit den Ziffern der Knoten weitergearbeitet.\
 
+```{r degree}
+# Calculate Degree of Vertices
 degree <- degree(net)
 
 # Adjacency Matrix
@@ -92,22 +123,31 @@ adjacencyMatrix <- net[]
 
 ```
 
+Aus dem Netz kann nun der Degree abgeleitet und abgespeichert werden. Der Degree oder Grad eines Knoten ist die Anzahl von Kanten, die an ihn angrenzen. Für die Analyse ist die Verteilung der Grade der Knoten interessant. Gibt es eine überwiegende Mehrheit an Knoten, welche die gleiche Anzahl an Kanten besitzen? Gibt es Ausreißer mit vielen Kanten? Ähnelt die Verteilung einer Normalverteilung, ist die links oder rechts verschoben?\
+Um diese Fragen zu beantworten, wird im nächsten Schritt ein Histogramm erzeugt, welches die Knotengrade des Netzwerkes visualisiert.\
+
 ## Data Visualization
-```{r viz, message=FALSE, warning=FALSE}
+Um die Degrees für die Visualisierung nutzen zu können, müssen diese zuvor in ein Dataframe umgewandelt werden. Dies geschieht mit der Funktion \textit{as.data.frame}. Anschließend wird die Library \textit{ggplot2} für das Histogramm angewendet. 
+
+```{r viz, message=FALSE, warning=FALSE, fig.cap = "Knotengrad Histogramm"}
 degree_df <- as.data.frame(degree)
 
 
-ggplot(data = degree_df, aes(x=degree))+
-  geom_bar(fill = "blue", colour = "blue", alpha=.5)+
-  scale_y_continuous(trans='log2')+
-  xlim(0,150)+
-  labs(title = "Histogram of Node-Degrees", subtitle = "Amazon Network Analysis", 
-       y = "Frequency (log2 scale)", x = "Degree of Vertices (xlim = 150)")+
+hist_of_degrees <- ggplot(data = degree_df, aes(x=degree))+
+  geom_bar(fill = "#e2001a", colour = "#e2001a", alpha=.5)+
+  scale_y_continuous(trans='log10')+
+  xlim(0,120)+
+  labs(title = "Histogram of Node-Degrees", 
+       subtitle = "Amazon Network Analysis", 
+       y = "Frequency (log10 scale)", 
+       x = "Degree of Vertices (xlim = 120)")+
   theme_classic()
 
-
+hist_of_degrees
 
 ```
+
+Das Histogramm der Knotengrade zeigt eine Mehrheit der Grade im Bereich 5-20. Dies bedeutet, dass eine Mehrheit der Knoten im Datensatz eine durchschnittliche Anzahl an Kanten von 5-20 aufweist. Weiterhin ist zu erkennen, dass einige Knoten 100 und mehr Kanten besitzen. Die großen Ausreißer wurden in diesem Plot weggelassen, doch selbst in dieser Darstellungsweise zeigt sich ein abflachender Bereich Richtung x --> unendlich. Um eine übersichtlichere Darstellung der Observationen um den Nullbereich der y-Achse zu gewährleisten, wurde die y-Achse nach dem dekadischen Logarithmus skaliert.
 
 ## Experimental Data
 
@@ -122,27 +162,30 @@ net_exp <- net_exp %>%
   mutate(
     degree = centrality_degree()
   )
+```
 
+```{r fig.cap = "Netzwerk Visualisierung 1"}
 # Data Viz for Subset
 # network diagramm
 ggraph(net_exp, layout = 'fr', maxiter = 100) + 
-  geom_node_point(colour="blue") + 
+  geom_node_point(colour="#e2001a") + 
   geom_edge_link(alpha = .4) +
   theme_graph()
-
+```
+```{r fig.cap = "Netzwerk Visualisierung 2"}
 ggraph(net_exp, layout = 'kk', maxiter = 100) + 
-  geom_node_point(colour="blue") + 
+  geom_node_point(colour="#e2001a") + 
   geom_edge_link(alpha = .4) +
   theme_graph()
-
-
+```
+```{r fig.cap = "Netzwerk Visualisierung 3"}
 # coord diagramm
 ggraph(net_exp, layout = 'linear', circular = TRUE) + 
-  geom_node_point(colour="blue") +
+  geom_node_point(colour="#e2001a") +
   geom_edge_arc(alpha = .4) +
   theme_graph()
-
 ```
+
 
 \newpage
 
