@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.11.12)  12 NOV 2021 14:12
-=======
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7440 64-bit) (preloaded format=pdflatex 2020.6.15)  15 NOV 2021 14:28
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.11.12)  15 NOV 2021 17:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -594,21 +590,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 192--194
  []
 
 
-<<<<<<< HEAD
 Underfull \hbox (badness 10000) in paragraph at lines 209--214
-=======
-Underfull \hbox (badness 10000) in paragraph at lines 205--210
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 
  []
 
 File: Data/logo.png Graphic file (type png)
 <use Data/logo.png>
-<<<<<<< HEAD
 Package pdftex.def Info: Data/logo.png  used on input line 229.
-=======
-Package pdftex.def Info: Data/logo.png  used on input line 227.
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 (pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
 
 Package fancyhdr Warning: \headheight is too small (28.0pt): 
@@ -619,30 +607,18 @@ Package fancyhdr Warning: \headheight is too small (28.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-6.0457pt}.
 
 [3]
-<<<<<<< HEAD
 Underfull \hbox (badness 10000) in paragraph at lines 250--255
-=======
-Underfull \hbox (badness 10000) in paragraph at lines 246--251
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 
  []
 
 
-<<<<<<< HEAD
 Underfull \hbox (badness 10000) in paragraph at lines 273--276
-=======
-Underfull \hbox (badness 10000) in paragraph at lines 269--272
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 
  []
 
 File: Data/logo.png Graphic file (type png)
 <use Data/logo.png>
-<<<<<<< HEAD
 Package pdftex.def Info: Data/logo.png  used on input line 307.
-=======
-Package pdftex.def Info: Data/logo.png  used on input line 303.
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 (pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
 
 Package fancyhdr Warning: \headheight is too small (28.0pt): 
@@ -653,16 +629,11 @@ Package fancyhdr Warning: \headheight is too small (28.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-6.0457pt}.
 
 [4]
-<<<<<<< HEAD
 Underfull \hbox (badness 10000) in paragraph at lines 309--317
-=======
-Underfull \hbox (badness 10000) in paragraph at lines 305--313
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 
  []
 
 
-<<<<<<< HEAD
 Underfull \hbox (badness 10000) in paragraph at lines 328--337
 
  []
@@ -670,20 +641,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 328--337
 File: Data/logo.png Graphic file (type png)
 <use Data/logo.png>
 Package pdftex.def Info: Data/logo.png  used on input line 345.
-=======
-Underfull \hbox (badness 10000) in paragraph at lines 324--333
-
- []
-
-LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
-349.
-("C:\Users\fbubeck2\AppData\Local\Programs\MiKTeX 2.9\tex/latex/lm\ts1lmtt.fd"
-File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-)
-File: Data/logo.png Graphic file (type png)
-<use Data/logo.png>
-Package pdftex.def Info: Data/logo.png  used on input line 359.
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 (pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
 
 Package fancyhdr Warning: \headheight is too small (28.0pt): 
@@ -694,7 +651,6 @@ Package fancyhdr Warning: \headheight is too small (28.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-6.0457pt}.
 
 [5]
-<<<<<<< HEAD
 LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
 353.
 (c:/Users/ferdi/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmtt.fd
@@ -722,17 +678,6 @@ Package fancyhdr Warning: \headheight is too small (28.0pt):
 File: Data/logo.png Graphic file (type png)
 <use Data/logo.png>
 Package pdftex.def Info: Data/logo.png  used on input line 408.
-=======
-<Assignment_files/figure-latex/viz-1.pdf, id=82, 469.755pt x 325.215pt>
-File: Assignment_files/figure-latex/viz-1.pdf Graphic file (type pdf)
-<use Assignment_files/figure-latex/viz-1.pdf>
-Package pdftex.def Info: Assignment_files/figure-latex/viz-1.pdf  used on input
- line 363.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-File: Data/logo.png Graphic file (type png)
-<use Data/logo.png>
-Package pdftex.def Info: Data/logo.png  used on input line 380.
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 (pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
 
 Package fancyhdr Warning: \headheight is too small (28.0pt): 
@@ -749,40 +694,22 @@ File: Assignment_files/figure-latex/unnamed-chunk-2-1.pdf Graphic file (type pd
 f)
 <use Assignment_files/figure-latex/unnamed-chunk-2-1.pdf>
 Package pdftex.def Info: Assignment_files/figure-latex/unnamed-chunk-2-1.pdf  u
-<<<<<<< HEAD
 sed on input line 412.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 <Assignment_files/figure-latex/unnamed-chunk-3-1.pdf, id=143, 469.755pt x 325.2
-=======
-sed on input line 408.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-File: Data/logo.png Graphic file (type png)
-<use Data/logo.png>
-Package pdftex.def Info: Data/logo.png  used on input line 412.
-(pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
-[7 <./Assignment_files/figure-latex/unnamed-chunk-2-1.pdf>]
-<Assignment_files/figure-latex/unnamed-chunk-3-1.pdf, id=109, 469.755pt x 325.2
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 15pt>
 File: Assignment_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (type pd
 f)
 <use Assignment_files/figure-latex/unnamed-chunk-3-1.pdf>
 Package pdftex.def Info: Assignment_files/figure-latex/unnamed-chunk-3-1.pdf  u
-<<<<<<< HEAD
 sed on input line 427.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 <Assignment_files/figure-latex/unnamed-chunk-4-1.pdf, id=144, 469.755pt x 325.2
-=======
-sed on input line 423.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-<Assignment_files/figure-latex/unnamed-chunk-4-1.pdf, id=110, 469.755pt x 325.2
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 15pt>
 File: Assignment_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pd
 f)
 <use Assignment_files/figure-latex/unnamed-chunk-4-1.pdf>
 Package pdftex.def Info: Assignment_files/figure-latex/unnamed-chunk-4-1.pdf  u
-<<<<<<< HEAD
 sed on input line 443.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 File: Data/logo.png Graphic file (type png)
@@ -858,52 +785,7 @@ blic/lm/lmr17.pfb><c:/Users/ferdi/AppData/Roaming/TinyTeX/texmf-dist/fonts/type
 /type1/public/lm/lmro12.pfb><c:/Users/ferdi/AppData/Roaming/TinyTeX/texmf-dist/
 fonts/type1/public/lm/lmtt12.pfb><c:/Users/ferdi/AppData/Roaming/TinyTeX/texmf-
 dist/fonts/type1/public/lm/lmtti10.pfb>
-Output written on Assignment.pdf (11 pages, 645843 bytes).
-=======
-sed on input line 439.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-File: Data/logo.png Graphic file (type png)
-<use Data/logo.png>
-Package pdftex.def Info: Data/logo.png  used on input line 443.
-(pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
-[8 <./Assignment_files/figure-latex/unnamed-chunk-3-1.pdf>]
-File: Data/logo.png Graphic file (type png)
-<use Data/logo.png>
-Package pdftex.def Info: Data/logo.png  used on input line 443.
-(pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
-[9 <./Assignment_files/figure-latex/unnamed-chunk-4-1.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 458.
-File: Data/logo.png Graphic file (type png)
-<use Data/logo.png>
-Package pdftex.def Info: Data/logo.png  used on input line 458.
-(pdftex.def)             Requested size: 71.12737pt x 29.69566pt.
-[10]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 458.
-(Assignment.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 458.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 458.
- ) 
-Here is how much of TeX's memory you used:
- 13760 strings out of 480797
- 206740 string characters out of 2894168
- 491548 words of memory out of 3000000
- 29374 multiletter control sequences out of 15000+200000
- 591601 words of font info for 120 fonts, out of 3000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 41i,15n,45p,811b,480s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Users/fbubeck2/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ts
-1.enc}{C:/Users/fbubeck2/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/lm/l
-m-ec.enc}<C:/Users/fbubeck2/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/publi
-c/lm/lmbx12.pfb><C:/Users/fbubeck2/AppData/Local/Programs/MiKTeX 2.9/fonts/type
-1/public/lm/lmr12.pfb><C:/Users/fbubeck2/AppData/Local/Programs/MiKTeX 2.9/font
-s/type1/public/lm/lmr17.pfb><C:/Users/fbubeck2/AppData/Local/Programs/MiKTeX 2.
-9/fonts/type1/public/lm/lmri12.pfb><C:/Users/fbubeck2/AppData/Local/Programs/Mi
-KTeX 2.9/fonts/type1/public/lm/lmro12.pfb><C:/Users/fbubeck2/AppData/Local/Prog
-rams/MiKTeX 2.9/fonts/type1/public/lm/lmtk10.pfb><C:/Users/fbubeck2/AppData/Loc
-al/Programs/MiKTeX 2.9/fonts/type1/public/lm/lmtt12.pfb><C:/Users/fbubeck2/AppD
-ata/Local/Programs/MiKTeX 2.9/fonts/type1/public/lm/lmtti10.pfb>
-Output written on Assignment.pdf (10 pages, 688419 bytes).
->>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
+Output written on Assignment.pdf (11 pages, 645876 bytes).
 PDF statistics:
  230 PDF objects out of 1000 (max. 8388607)
  187 compressed objects within 2 object streams
