@@ -112,9 +112,23 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
 \usepackage{graphicx} \usepackage{fancyhdr} \pagestyle{fancy} \setlength\headheight{28pt} \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}} \fancyfoot[LE,RO]{Ferdinand Bubeck}
+<<<<<<< HEAD
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
+=======
+
+\title{Amazon Network Analysis}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Assignment im Rahmen der Vorlesung `Social Network Analyis'}
+\author{Ferdinand Bubeck}
+\date{2021-11-15}
+>>>>>>> c29a0ff1402b36d269d6a4611b453dbc652ba8e4
 
 \begin{document}
 \maketitle
