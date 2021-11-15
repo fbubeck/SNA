@@ -13,12 +13,12 @@ output:
     toc: yes
     toc_depth: 2
   html_document:
+    
     highlight: tango
     number_sections: yes
     theme: united
     toc: yes
     toc_depth: 2
-    
 fontsize : 12 pt
 header-includes: 
    \usepackage{graphicx}
@@ -27,7 +27,6 @@ header-includes:
    \setlength\headheight{28pt}
    \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}}
    \fancyfoot[LE,RO]{Ferdinand Bubeck}
- 
 editor_options:
   chunk_output_type: console
 toc-title: Inhaltsverzeichnis
@@ -63,6 +62,7 @@ library("tidyverse")
 library("tidygraph")
 library("igraph")
 library("ggraph")
+library("tinytex")
 ```
 
 
