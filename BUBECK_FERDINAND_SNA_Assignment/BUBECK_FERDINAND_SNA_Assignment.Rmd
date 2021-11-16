@@ -25,7 +25,7 @@ header-includes:
    \usepackage{fancyhdr}
    \pagestyle{fancy}
    \setlength\headheight{28pt}
-   \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}}
+   \fancyhead[L]{\includegraphics[width=2.5cm]{../Data/logo.png}}
    \fancyfoot[LE,RO]{Ferdinand Bubeck}
 editor_options:
   chunk_output_type: console
@@ -47,7 +47,7 @@ Zielsetzung ist es, auf Basis der Daten eine Forschungsfrage zu überlegen und d
 ## Vorgehensweise
 Als Vorgehensweise wird in diesem Projekt das für das Feld Data Science etablierte Standard-Vorgehen CRISP-DM gewählt (Cross Industry Standard Process for Data Mining). In mehreren Phasen werden so von dem richtigen Verständnis der Daten, dem Data Wrangling und Data Preprocessing bis hin zum Modelfitting und der Evaluation alle entscheidenen Schritte strukturiert durchlaufen, um ein optimales Ergebnis aus den Daten zu generieren. In der Abbildung 1 ist das Vorgehensmodell abgebildet. Da es sich in diesem Projekt um ein PoC handelt, wird die letzte Phase 'Deployment' ausgelassen.
 
-![CRISP-DM (Source: https://statistik-dresden.de/archives/1128))](Data/CRISP-DM_Process_Diagram1.png){width=50%}
+![CRISP-DM (Source: https://statistik-dresden.de/archives/1128))](../Data/CRISP-DM_Process_Diagram1.png){width=50%}
 
 
 
@@ -92,7 +92,7 @@ Die Daten stammen aus der Datensatz-Bibliothek der Stanford University und könn
 Zum Einlesen der Daten kommt im Folgenden die Funktion \textit{read.table} zum Einsatz.\
 
 ```{r data}
-amazon <- read.table("Data/Amazon0302.txt")
+amazon <- read.table("../Data/Amazon0302.txt")
 ```
 
 ### Datenexploration
