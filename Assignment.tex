@@ -5,21 +5,10 @@
 \documentclass[
   12 pt,
 ]{article}
-\title{Amazon Network Analysis}
-\usepackage{etoolbox}
-\makeatletter
-\providecommand{\subtitle}[1]{% add subtitle to \maketitle
-  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
-}
-\makeatother
-\subtitle{Assignment im Rahmen der Vorlesung `Social Network Analyis'}
-\author{Ferdinand Bubeck}
-\date{2021-11-15}
-
-\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{iftex}
-\ifPDFTeX
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -94,7 +83,7 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\usepackage{graphicx}
+\usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -112,16 +101,24 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
 \usepackage{graphicx} \usepackage{fancyhdr} \pagestyle{fancy} \setlength\headheight{28pt} \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}} \fancyfoot[LE,RO]{Ferdinand Bubeck}
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+
+\title{Amazon Network Analysis}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Assignment im Rahmen der Vorlesung `Social Network Analyis'}
+\author{Ferdinand Bubeck}
+\date{2021-11-16}
 
 \begin{document}
 \maketitle
 
 \renewcommand*\contentsname{Inhaltsverzeichnis}
 {
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 \tableofcontents
 }
 \newpage
@@ -129,8 +126,19 @@
 \hypertarget{einleitung}{%
 \section{Einleitung}\label{einleitung}}
 
+Im Rahmen der Vorlesung ``Social Network Analyses'' von Philipp Mendoza
+an der DHBW Stuttgart soll eine Netzwerkanalyse auf Basis eines
+gewählten Datensatzes abgegeben werden. Der Autor dieser Arbeit hat sich
+für einen Amazon Produktdatensatz entschieden, welcher im Laufe der
+Arbeit vorgestellt wird.
+
 \hypertarget{zielsetzung}{%
 \subsection{Zielsetzung}\label{zielsetzung}}
+
+Zielsetzung ist es, auf Basis der Daten eine Forschungsfrage zu
+überlegen und diese netzwerkanalytisch zu beantworten. Dabei sollen
+erlernte Konzepte aus der Vorlesung einfließen und mindestens eine
+Netzwerk Visualisierung enthalten sein.
 
 \hypertarget{vorgehensweise}{%
 \subsection{Vorgehensweise}\label{vorgehensweise}}
@@ -160,25 +168,72 @@ sich in diesem Projekt um ein PoC handelt, wird die letzte Phase
 \hypertarget{business-understanding}{%
 \subsection{Business Understanding}\label{business-understanding}}
 
+Netzwerkanalyse beschäftigt sich mit der Analyse von verschiedenen Arten
+von Netzwerken. Dabei liegt der Fokus auf den Beziehungen und vorallem
+den Beziehungsstrukturen zwischen mehreren Knoten. Die Merkmale der
+Knoten spielen ebenfalls eine Rolle, das Hauptaugenmerk liegt allerdings
+auf den Strukturen und Dynamiken.
+
+\hypertarget{datensatz}{%
+\subsubsection{Datensatz}\label{datensatz}}
+
+Der dieser Arbeit zugrunde liegende Datensatz stammt aus der
+Datensatz-Bibliothek der Stanford University und bildet ein Netzwerk von
+einer Vielzahl an Amazon Produkten. Es handelt sich bei dem Datensatz um
+\emph{ready-made Daten}, da der Datensatz als Nebenprodukt einer API
+entsteht.\newline ``If a product i is frequently co-purchased with
+product j, the graph contains a directed edge from i to j'' \newline Die
+Beschreibung des Datensatzes von der Website lässt die Vermutung zu,
+dass es Produkte geben muss, welche im Netzwerk zentral sind und häufig
+in Verbindung mit anderen Produkten gekauft werden.
+
+\hypertarget{fragestellung}{%
+\subsubsection{Fragestellung}\label{fragestellung}}
+
+Aus diesem Grund sollen in dieser Arbeit die folgenden Frage beantwortet
+werden:\\
+
 \begin{itemize}
 \tightlist
 \item
-  Welche Produkte werden nur in Verbindung mit anderen Produkten
+  Welche Produkte werden in Verbindung mit den meisten anderen Produkten
   gekauft?
 \item
-  Welche Produkte sind zentral?
+  Welche Produkte werden hauptsächlich eigenständig gekauft?
 \end{itemize}
+
+\hypertarget{data-understanding}{%
+\subsection{Data Understanding}\label{data-understanding}}
 
 \hypertarget{laden-der-libraries}{%
 \subsubsection{Laden der Libraries}\label{laden-der-libraries}}
 
+Um mit der Datenanalyse und -aufbereitung zu beginnen, müssen zuerst
+Libraries geladen, welche relevant sind. \emph{Tidyverse} ist eine
+Library, welche eine Vielzahl an Tools in einer eigenen Designphilosophy
+mit eigener Grammatik bereitstellt. So gehört zum Beispiel das Paket
+\emph{ggplot2} für die Datenvisualisierung zur Libary dazu.
+\emph{Tidygraph}, \emph{ggraph} und \emph{igraph} sind für die
+Visualisierung notwendig. Das Paket \emph{tinytex} beinhaltet die
+Sprache LaTeX für die Kompilierung der Skript-Befehle. Die folgende
+Funktion überprüft, ob alle Pakete in der Liste bereits installiert sind
+und installiert gegenfalls alle nicht installierten Libraries. Danach
+werden alle Libraries geladen.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{)}
-\FunctionTok{library}\NormalTok{(}\StringTok{"tidygraph"}\NormalTok{)}
-\FunctionTok{library}\NormalTok{(}\StringTok{"igraph"}\NormalTok{)}
-\FunctionTok{library}\NormalTok{(}\StringTok{"ggraph"}\NormalTok{)}
-\FunctionTok{library}\NormalTok{(}\StringTok{"tinytex"}\NormalTok{)}
+\NormalTok{packages =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"tidygraph"}\NormalTok{,}
+             \StringTok{"igraph"}\NormalTok{, }\StringTok{"ggraph"}\NormalTok{, }\StringTok{"tinytex"}\NormalTok{)}
+
+\NormalTok{package.check <-}\StringTok{ }\KeywordTok{lapply}\NormalTok{(}
+\NormalTok{  packages,}
+  \DataTypeTok{FUN =} \ControlFlowTok{function}\NormalTok{(x) \{}
+    \ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{require}\NormalTok{(x, }\DataTypeTok{character.only =} \OtherTok{TRUE}\NormalTok{)) \{}
+      \KeywordTok{install.packages}\NormalTok{(x, }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{)}
+      \KeywordTok{library}\NormalTok{(x, }\DataTypeTok{character.only =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{    \}}
+\NormalTok{  \}}
+\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -186,7 +241,7 @@ sich in diesem Projekt um ein PoC handelt, wird die letzte Phase
 \subsubsection{Importieren der Daten}\label{importieren-der-daten}}
 
 Die Daten stammen aus der Datensatz-Bibliothek der Stanford University
-und können als .txt unter folgendem Lin heruntergeladen werden. (Link:
+und können als .txt unter folgendem Link heruntergeladen werden. (Link:
 \url{https://snap.stanford.edu/data/amazon0302.html})
 
 Zum Einlesen der Daten kommt im Folgenden die Funktion
@@ -194,12 +249,12 @@ Zum Einlesen der Daten kommt im Folgenden die Funktion
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{amazon }\OtherTok{\textless{}{-}} \FunctionTok{read.table}\NormalTok{(}\StringTok{"Data/Amazon0302.txt"}\NormalTok{)}
+\NormalTok{amazon <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\StringTok{"Data/Amazon0302.txt"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{data-understanding}{%
-\subsection{Data Understanding}\label{data-understanding}}
+\hypertarget{datenexploration}{%
+\subsubsection{Datenexploration}\label{datenexploration}}
 
 Die Daten basieren auf dem Grundsatz ``Kunden, die Artikel A gekauft
 haben, haben auch Artikel B gekauft''. Wenn ein Produkt i häufig
@@ -214,7 +269,7 @@ gezählt und ausgegeben.\\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{head}\NormalTok{(amazon)}
+\KeywordTok{head}\NormalTok{(amazon)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -230,8 +285,8 @@ gezählt und ausgegeben.\\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Count NAs}
-\FunctionTok{which}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(amazon))}
+\CommentTok{# Count NAs}
+\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(amazon))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -255,14 +310,14 @@ erhöht, sodass keine Nullen mehr existieren.\\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{dat }\OtherTok{\textless{}{-}}\NormalTok{ amazon }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{rename}\NormalTok{(}
-    \AttributeTok{from =}\NormalTok{ V1,}
-    \AttributeTok{to =}\NormalTok{ V2}
-\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{mutate}\NormalTok{(}
-    \AttributeTok{from =}\NormalTok{ from}\SpecialCharTok{+}\DecValTok{1}\NormalTok{,}
-    \AttributeTok{to =}\NormalTok{ to}\SpecialCharTok{+}\DecValTok{1}
+\NormalTok{dat <-}\StringTok{ }\NormalTok{amazon }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{rename}\NormalTok{(}
+    \DataTypeTok{from =}\NormalTok{ V1,}
+    \DataTypeTok{to =}\NormalTok{ V2}
+\NormalTok{  ) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}
+    \DataTypeTok{from =}\NormalTok{ from}\OperatorTok{+}\DecValTok{1}\NormalTok{,}
+    \DataTypeTok{to =}\NormalTok{ to}\OperatorTok{+}\DecValTok{1}
 \NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
@@ -276,7 +331,7 @@ erstellen.\\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{net }\OtherTok{\textless{}{-}} \FunctionTok{as\_tbl\_graph}\NormalTok{(dat)}
+\NormalTok{net <-}\StringTok{ }\KeywordTok{as_tbl_graph}\NormalTok{(dat)}
 \NormalTok{net}
 \end{Highlighting}
 \end{Shaded}
@@ -317,11 +372,11 @@ weitergearbeitet.\\
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Calculate Degree of Vertices}
-\NormalTok{degree }\OtherTok{\textless{}{-}} \FunctionTok{degree}\NormalTok{(net)}
+\CommentTok{# Calculate Degree of Vertices}
+\NormalTok{degree <-}\StringTok{ }\KeywordTok{degree}\NormalTok{(net)}
 
-\CommentTok{\# Adjacency Matrix}
-\NormalTok{adjacencyMatrix }\OtherTok{\textless{}{-}}\NormalTok{ net[]}
+\CommentTok{# Adjacency Matrix}
+\NormalTok{adjacencyMatrix <-}\StringTok{ }\NormalTok{net[]}
 \end{Highlighting}
 \end{Shaded}
 
@@ -340,25 +395,25 @@ erzeugt, welches die Knotengrade des Netzwerkes visualisiert.\\
 
 Um die Degrees für die Visualisierung nutzen zu können, müssen diese
 zuvor in ein Dataframe umgewandelt werden. Dies geschieht mit der
-Funktion \textit{as.data.frame}. Anschließend wird die Library
-\textit{ggplot2} für das Histogramm angewendet.
+Funktion \emph{as.data.frame}. Anschließend wird die Library
+\emph{ggplot2} für das Histogramm angewendet.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{degree\_df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(degree)}
+\NormalTok{degree_df <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(degree)}
 
 
-\NormalTok{hist\_of\_degrees }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ degree\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{degree))}\SpecialCharTok{+}
-  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"\#e2001a"}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#e2001a"}\NormalTok{, }\AttributeTok{alpha=}\NormalTok{.}\DecValTok{5}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{trans=}\StringTok{\textquotesingle{}log10\textquotesingle{}}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{xlim}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{120}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Histogram of Node{-}Degrees"}\NormalTok{, }
-       \AttributeTok{subtitle =} \StringTok{"Amazon Network Analysis"}\NormalTok{, }
-       \AttributeTok{y =} \StringTok{"Frequency (log10 scale)"}\NormalTok{, }
-       \AttributeTok{x =} \StringTok{"Degree of Vertices (xlim = 120)"}\NormalTok{)}\SpecialCharTok{+}
-  \FunctionTok{theme\_classic}\NormalTok{()}
+\NormalTok{hist_of_degrees <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ degree_df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{degree))}\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#e2001a"}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"#e2001a"}\NormalTok{, }\DataTypeTok{alpha=}\NormalTok{.}\DecValTok{5}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{trans=}\StringTok{'log10'}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlim}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{120}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Histogram of Node-Degrees"}\NormalTok{, }
+       \DataTypeTok{subtitle =} \StringTok{"Amazon Network Analysis"}\NormalTok{, }
+       \DataTypeTok{y =} \StringTok{"Frequency (log10 scale)"}\NormalTok{, }
+       \DataTypeTok{x =} \StringTok{"Degree of Vertices (xlim = 120)"}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_classic}\NormalTok{()}
 
-\NormalTok{hist\_of\_degrees}
+\NormalTok{hist_of_degrees}
 \end{Highlighting}
 \end{Shaded}
 
@@ -381,60 +436,123 @@ y-Achse nach dem dekadischen Logarithmus skaliert.
 \hypertarget{experimental-data}{%
 \subsection{Experimental Data}\label{experimental-data}}
 
+Um die Laufzeit und die Übersichtlichkeit der Visualisierungen zu
+verbessern hat sich der Autor dieser Arbeit dazu entschieden, die
+Fragestellung anhand einer Teilmenge des gesamten Datensatzes
+durchzuführen. Es wird demnach ein Subset von \emph{250 Zeilen} aus dem
+Datensatz verwendet.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Subsetting Data}
-\NormalTok{dat\_exp }\OtherTok{\textless{}{-}}\NormalTok{ dat[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{200}\NormalTok{,]}
+\CommentTok{# Subsetting Data}
+\NormalTok{dat_exp <-}\StringTok{ }\NormalTok{dat[}\DecValTok{1}\OperatorTok{:}\DecValTok{250}\NormalTok{,]}
 
-\NormalTok{net\_exp }\OtherTok{\textless{}{-}} \FunctionTok{as\_tbl\_graph}\NormalTok{(dat\_exp)}
+\NormalTok{net_exp <-}\StringTok{ }\KeywordTok{as_tbl_graph}\NormalTok{(dat_exp)}
 
-\NormalTok{net\_exp }\OtherTok{\textless{}{-}}\NormalTok{ net\_exp }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{activate}\NormalTok{(nodes) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{mutate}\NormalTok{(}
-    \AttributeTok{degree =} \FunctionTok{centrality\_degree}\NormalTok{()}
+\NormalTok{net_exp <-}\StringTok{ }\NormalTok{net_exp }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{activate}\NormalTok{(nodes) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}
+    \DataTypeTok{degree =} \KeywordTok{centrality_degree}\NormalTok{()}
 \NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
 
+\hypertarget{zentralituxe4tsmauxdf}{%
+\subsubsection{Zentralitätsmaß}\label{zentralituxe4tsmauxdf}}
+
+Um die Fragestellung dieser Arbeit zu beantworten, müssen weitere
+Erkenntnisse über die Netzwerk-Struktur analysiert werden. Hierfür sind
+Zentralitätsmaße eine gute Anlaufstelle, um ``wichtigere Knoten'' im
+Sinne des Maßes zu identifizieren. Der Autor hat sich für die
+Beantwortung der Fragestellung:\\
+\emph{Welche Produkte werden in Verbindung mit den meisten anderen
+Produkten gekauft?}\\
+für die Betweenness-Centrality entschieden. Ein Knoten hat einen hohen
+Betweenness-Wert, wenn dieser Knoten Bestandteil besonders vieler
+kürzester Wege ist und die jeweiligen Paare wenige andere kürzeste Wege
+haben, auf der der Knoten nicht enthalten ist. Für jedes Paar von Knoten
+wird daher der Anteil an kürzesten Wegen zwischen ihnen berechnet, die v
+enthalten. Diese Anteile werden für alle Paare von Knoten aufsummiert um
+die Betweennesszentralität von v zu berechnen.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Data Viz for Subset}
-\CommentTok{\# network diagramm}
-\FunctionTok{ggraph}\NormalTok{(net\_exp, }\AttributeTok{layout =} \StringTok{\textquotesingle{}fr\textquotesingle{}}\NormalTok{, }\AttributeTok{maxiter =} \DecValTok{100}\NormalTok{) }\SpecialCharTok{+} 
-  \FunctionTok{geom\_node\_point}\NormalTok{(}\AttributeTok{colour=}\StringTok{"\#e2001a"}\NormalTok{) }\SpecialCharTok{+} 
-  \FunctionTok{geom\_edge\_link}\NormalTok{(}\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{theme\_graph}\NormalTok{()}
+\CommentTok{# Betweenness Centrality}
+\NormalTok{centr_betweenness <-}\StringTok{ }\KeywordTok{betweenness}\NormalTok{(}
+\NormalTok{  net_exp,}
+  \DataTypeTok{directed =} \OtherTok{TRUE}\NormalTok{,}
+  \DataTypeTok{weights =} \OtherTok{NULL}\NormalTok{,}
+  \DataTypeTok{nobigint =} \OtherTok{TRUE}\NormalTok{,}
+  \DataTypeTok{normalized =} \OtherTok{FALSE}
+\NormalTok{)}
+
+\NormalTok{df_centr_betweenness <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(centr_betweenness)}
+
+\NormalTok{top_}\DecValTok{5}\NormalTok{ <-}\StringTok{ }\NormalTok{df_centr_betweenness }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{top_n}\NormalTok{(}\DecValTok{5}\NormalTok{)  }\CommentTok{# highest values}
+
+\NormalTok{top_}\DecValTok{5}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{figure}
-\centering
+\begin{verbatim}
+##    centr_betweenness
+## 9          1154.5000
+## 12          343.0667
+## 21          585.7333
+## 23          470.0000
+## 31          428.7500
+\end{verbatim}
+
+Zu sehen sind die fünf Knoten der Teilmenge des Datensatzes mit den
+höchsten Betweenness-Zentralitätsmaßen. Dies bedeutet, dass Knoten
+Nummer 9 der Knoten ist, welcher die größte Bedeutung im Bezug auf die
+meisten kürzesten Wege hat. In dieser Teilmenge des Datensatzes ist
+Knoten Nummer 9 das Produkt, welches am meisten in Verbindung mit
+anderen Produkten gekauft wird.
+
+\hypertarget{visualisierung}{%
+\subsubsection{Visualisierung}\label{visualisierung}}
+
+Um die Beziehungen des Knoten Nummer 9 besser verstehen zu können,
+werden im Folgenden drei Visualisierungen erstellt.\\
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Data Viz for Subset}
+\CommentTok{# network diagramm}
+\KeywordTok{ggraph}\NormalTok{(net_exp, }\DataTypeTok{layout =} \StringTok{'fr'}\NormalTok{, }\DataTypeTok{maxiter =} \DecValTok{100}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_node_point}\NormalTok{(}\DataTypeTok{colour=}\StringTok{"#e2001a"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_edge_link}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{.4}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_node_label}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label=}\KeywordTok{ifelse}\NormalTok{(name }\OperatorTok{==}\StringTok{ "9"}\NormalTok{, name, }\OtherTok{NA}\NormalTok{))) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_graph}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
 \includegraphics{Assignment_files/figure-latex/unnamed-chunk-2-1.pdf}
-\caption{Netzwerk Visualisierung 1}
-\end{figure}
+\newpage
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{ggraph}\NormalTok{(net\_exp, }\AttributeTok{layout =} \StringTok{\textquotesingle{}kk\textquotesingle{}}\NormalTok{, }\AttributeTok{maxiter =} \DecValTok{100}\NormalTok{) }\SpecialCharTok{+} 
-  \FunctionTok{geom\_node\_point}\NormalTok{(}\AttributeTok{colour=}\StringTok{"\#e2001a"}\NormalTok{) }\SpecialCharTok{+} 
-  \FunctionTok{geom\_edge\_link}\NormalTok{(}\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{theme\_graph}\NormalTok{()}
+\KeywordTok{ggraph}\NormalTok{(net_exp, }\DataTypeTok{layout =} \StringTok{'kk'}\NormalTok{, }\DataTypeTok{maxiter =} \DecValTok{100}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_node_point}\NormalTok{(}\DataTypeTok{colour=}\StringTok{"#e2001a"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_edge_link}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{.4}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_node_label}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label=}\KeywordTok{ifelse}\NormalTok{(name }\OperatorTok{==}\StringTok{ "9"}\NormalTok{, name, }\OtherTok{NA}\NormalTok{))) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_graph}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{figure}
-\centering
 \includegraphics{Assignment_files/figure-latex/unnamed-chunk-3-1.pdf}
-\caption{Netzwerk Visualisierung 2}
-\end{figure}
+\newpage
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# coord diagramm}
-\FunctionTok{ggraph}\NormalTok{(net\_exp, }\AttributeTok{layout =} \StringTok{\textquotesingle{}linear\textquotesingle{}}\NormalTok{, }\AttributeTok{circular =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+} 
-  \FunctionTok{geom\_node\_point}\NormalTok{(}\AttributeTok{colour=}\StringTok{"\#e2001a"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{geom\_edge\_arc}\NormalTok{(}\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{theme\_graph}\NormalTok{()}
+\CommentTok{# coord diagramm}
+\KeywordTok{ggraph}\NormalTok{(net_exp, }\DataTypeTok{layout =} \StringTok{'linear'}\NormalTok{, }\DataTypeTok{circular =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_node_point}\NormalTok{(}\DataTypeTok{colour=}\StringTok{"#e2001a"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_edge_arc}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{.4}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_node_label}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label=}\KeywordTok{ifelse}\NormalTok{(name }\OperatorTok{==}\StringTok{ "9"}\NormalTok{, name, }\OtherTok{NA}\NormalTok{))) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_graph}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 

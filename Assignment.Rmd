@@ -11,7 +11,7 @@ output:
     highlight: tango
     number_sections: yes
     toc: yes
-    toc_depth: 2
+    toc_depth: 3
   html_document:
     
     highlight: tango
@@ -39,8 +39,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 \newpage
 # Einleitung
+Im Rahmen der Vorlesung "Social Network Analyses" von Philipp Mendoza an der DHBW Stuttgart soll eine Netzwerkanalyse auf Basis eines gewählten Datensatzes abgegeben werden. Der Autor dieser Arbeit hat sich für einen Amazon Produktdatensatz entschieden, welcher im Laufe der Arbeit vorgestellt wird.
 
 ## Zielsetzung
+Zielsetzung ist es, auf Basis der Daten eine Forschungsfrage zu überlegen und diese netzwerkanalytisch zu beantworten. Dabei sollen erlernte Konzepte aus der Vorlesung einfließen und mindestens eine Netzwerk Visualisierung enthalten sein.
 
 ## Vorgehensweise
 Als Vorgehensweise wird in diesem Projekt das für das Feld Data Science etablierte Standard-Vorgehen CRISP-DM gewählt (Cross Industry Standard Process for Data Mining). In mehreren Phasen werden so von dem richtigen Verständnis der Daten, dem Data Wrangling und Data Preprocessing bis hin zum Modelfitting und der Evaluation alle entscheidenen Schritte strukturiert durchlaufen, um ein optimales Ergebnis aus den Daten zu generieren. In der Abbildung 1 ist das Vorgehensmodell abgebildet. Da es sich in diesem Projekt um ein PoC handelt, wird die letzte Phase 'Deployment' ausgelassen.
@@ -52,22 +54,40 @@ Als Vorgehensweise wird in diesem Projekt das für das Feld Data Science etablie
 \newpage
 # Hauptteil
 ## Business Understanding
+Netzwerkanalyse beschäftigt sich mit der Analyse von verschiedenen Arten von Netzwerken. Dabei liegt der Fokus auf den Beziehungen und vorallem den Beziehungsstrukturen zwischen mehreren Knoten. Die Merkmale der Knoten spielen ebenfalls eine Rolle, das Hauptaugenmerk liegt allerdings auf den Strukturen und Dynamiken. 
 
-- Welche Produkte werden nur in Verbindung mit anderen Produkten gekauft?
-- Welche Produkte sind zentral?
+### Datensatz
+Der dieser Arbeit zugrunde liegende Datensatz stammt aus der Datensatz-Bibliothek der Stanford University und bildet ein Netzwerk von einer Vielzahl an Amazon Produkten. Es handelt sich bei dem Datensatz um *ready-made Daten*, da der Datensatz als Nebenprodukt einer API entsteht.\newline "If a product i is frequently co-purchased with product j, the graph contains a directed edge from i to j" \newline
+Die Beschreibung des Datensatzes von der Website lässt die Vermutung zu, dass es Produkte geben muss, welche im Netzwerk zentral sind und häufig in Verbindung mit anderen Produkten gekauft werden.
 
+### Fragestellung
+Aus diesem Grund sollen in dieser Arbeit die folgenden Frage beantwortet werden: \
+
+- Welche Produkte werden in Verbindung mit den meisten anderen Produkten gekauft?
+- Welche Produkte werden hauptsächlich eigenständig gekauft?
+
+
+## Data Understanding
 ### Laden der Libraries
+Um mit der Datenanalyse und -aufbereitung zu beginnen, müssen zuerst Libraries geladen, welche relevant sind. *Tidyverse* ist eine Library, welche eine Vielzahl an Tools in einer eigenen Designphilosophy mit eigener Grammatik bereitstellt. So gehört zum Beispiel das Paket *ggplot2* für die Datenvisualisierung zur Libary dazu. *Tidygraph*, *ggraph* und *igraph* sind für die Visualisierung notwendig. Das Paket *tinytex* beinhaltet die Sprache LaTeX für die Kompilierung der Skript-Befehle. Die folgende Funktion überprüft, ob alle Pakete in der Liste bereits installiert sind und installiert gegenfalls alle nicht installierten Libraries. Danach werden alle Libraries geladen.
 ```{r libraries, message=FALSE, warning=FALSE}
-library("tidyverse")
-library("tidygraph")
-library("igraph")
-library("ggraph")
-library("tinytex")
+packages = c("tidyverse", "tidygraph",
+             "igraph", "ggraph", "tinytex")
+
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
 ```
 
 
 ### Importieren der Daten
-Die Daten stammen aus der Datensatz-Bibliothek der Stanford University und können als .txt unter folgendem Lin heruntergeladen werden. (Link: https://snap.stanford.edu/data/amazon0302.html)
+Die Daten stammen aus der Datensatz-Bibliothek der Stanford University und können als .txt unter folgendem Link heruntergeladen werden. (Link: https://snap.stanford.edu/data/amazon0302.html)
 
 Zum Einlesen der Daten kommt im Folgenden die Funktion \textit{read.table} zum Einsatz.\
 
@@ -75,7 +95,7 @@ Zum Einlesen der Daten kommt im Folgenden die Funktion \textit{read.table} zum E
 amazon <- read.table("Data/Amazon0302.txt")
 ```
 
-## Data Understanding
+### Datenexploration
 Die Daten basieren auf dem Grundsatz "Kunden, die Artikel A gekauft haben, haben auch Artikel B gekauft". Wenn ein Produkt i häufig zusammen mit Produkt j gekauft wird , enthält der Graph eine gerichtete Kante von i nach j .
 
 Um einen ersten Einblick in die Daten zu erhalten, wird mit der Funktion \textit{head} die ersten Zeilen des Datensatzes ausgegeben. Zusätzlich dazu ist es von entscheidender Rolle, die Qualität der Daten zu bewerten. Aus diesem Grund werden alle fehlenden Werte, sogenannte NAs gezählt und ausgegeben.\
@@ -127,7 +147,7 @@ Aus dem Netz kann nun der Degree abgeleitet und abgespeichert werden. Der Degree
 Um diese Fragen zu beantworten, wird im nächsten Schritt ein Histogramm erzeugt, welches die Knotengrade des Netzwerkes visualisiert.\
 
 ## Data Visualization
-Um die Degrees für die Visualisierung nutzen zu können, müssen diese zuvor in ein Dataframe umgewandelt werden. Dies geschieht mit der Funktion \textit{as.data.frame}. Anschließend wird die Library \textit{ggplot2} für das Histogramm angewendet. 
+Um die Degrees für die Visualisierung nutzen zu können, müssen diese zuvor in ein Dataframe umgewandelt werden. Dies geschieht mit der Funktion *as.data.frame*. Anschließend wird die Library *ggplot2* für das Histogramm angewendet. 
 
 ```{r viz, message=FALSE, warning=FALSE, fig.cap = "Knotengrad Histogramm"}
 degree_df <- as.data.frame(degree)
@@ -144,16 +164,17 @@ hist_of_degrees <- ggplot(data = degree_df, aes(x=degree))+
   theme_classic()
 
 hist_of_degrees
-
 ```
 
 Das Histogramm der Knotengrade zeigt eine Mehrheit der Grade im Bereich 5-20. Dies bedeutet, dass eine Mehrheit der Knoten im Datensatz eine durchschnittliche Anzahl an Kanten von 5-20 aufweist. Weiterhin ist zu erkennen, dass einige Knoten 100 und mehr Kanten besitzen. Die großen Ausreißer wurden in diesem Plot weggelassen, doch selbst in dieser Darstellungsweise zeigt sich ein abflachender Bereich Richtung x --> unendlich. Um eine übersichtlichere Darstellung der Observationen um den Nullbereich der y-Achse zu gewährleisten, wurde die y-Achse nach dem dekadischen Logarithmus skaliert.
 
+
 ## Experimental Data
+Um die Laufzeit und die Übersichtlichkeit der Visualisierungen zu verbessern hat sich der Autor dieser Arbeit dazu entschieden, die Fragestellung anhand einer Teilmenge des gesamten Datensatzes durchzuführen. Es wird demnach ein Subset von *250 Zeilen* aus dem Datensatz verwendet.
 
 ```{r message=FALSE, warning=FALSE}
 # Subsetting Data
-dat_exp <- dat[1:200,]
+dat_exp <- dat[1:250,]
 
 net_exp <- as_tbl_graph(dat_exp)
 
@@ -164,27 +185,61 @@ net_exp <- net_exp %>%
   )
 ```
 
-```{r fig.cap = "Netzwerk Visualisierung 1"}
+### Zentralitätsmaß 
+Um die Fragestellung dieser Arbeit zu beantworten, müssen weitere Erkenntnisse über die Netzwerk-Struktur analysiert werden. Hierfür sind Zentralitätsmaße eine gute Anlaufstelle, um "wichtigere Knoten" im Sinne des Maßes zu identifizieren. Der Autor hat sich für die Beantwortung der Fragestellung:\
+*Welche Produkte werden in Verbindung mit den meisten anderen Produkten gekauft?*\
+für die Betweenness-Centrality entschieden. Ein Knoten hat einen hohen Betweenness-Wert, wenn dieser Knoten Bestandteil besonders vieler kürzester Wege ist und die jeweiligen Paare wenige andere kürzeste Wege haben, auf der der Knoten nicht enthalten ist. Für jedes Paar von Knoten wird daher der Anteil an kürzesten Wegen zwischen ihnen berechnet, die v enthalten. Diese Anteile werden für alle Paare von Knoten aufsummiert um die Betweennesszentralität von v zu berechnen.
+
+```{r Betweenness Centrality, message=FALSE, warning=FALSE}
+# Betweenness Centrality
+centr_betweenness <- betweenness(
+  net_exp,
+  directed = TRUE,
+  weights = NULL,
+  nobigint = TRUE,
+  normalized = FALSE
+)
+
+df_centr_betweenness <- as.data.frame(centr_betweenness)
+
+top_5 <- df_centr_betweenness %>% 
+  top_n(5)  # highest values
+
+top_5
+```
+Zu sehen sind die fünf Knoten der Teilmenge des Datensatzes mit den höchsten Betweenness-Zentralitätsmaßen. Dies bedeutet, dass Knoten Nummer 9 der Knoten ist, welcher die größte Bedeutung im Bezug auf die meisten kürzesten Wege hat. In dieser Teilmenge des Datensatzes ist Knoten Nummer 9 das Produkt, welches am meisten in Verbindung mit anderen Produkten gekauft wird.
+
+### Visualisierung
+Um die Beziehungen des Knoten Nummer 9 besser verstehen zu können, werden im Folgenden drei Visualisierungen erstellt.\
+
+```{r fig.cap="Netzwerk Visualisierung 1", message=FALSE, warning=FALSE}
 # Data Viz for Subset
 # network diagramm
 ggraph(net_exp, layout = 'fr', maxiter = 100) + 
   geom_node_point(colour="#e2001a") + 
   geom_edge_link(alpha = .4) +
+  geom_node_label(aes(label=ifelse(name == "9", name, NA))) +
   theme_graph()
 ```
-```{r fig.cap = "Netzwerk Visualisierung 2"}
+\newpage
+```{r fig.cap="Netzwerk Visualisierung 2", message=FALSE, warning=FALSE}
 ggraph(net_exp, layout = 'kk', maxiter = 100) + 
   geom_node_point(colour="#e2001a") + 
   geom_edge_link(alpha = .4) +
+  geom_node_label(aes(label=ifelse(name == "9", name, NA))) +
   theme_graph()
 ```
-```{r fig.cap = "Netzwerk Visualisierung 3"}
+\newpage
+```{r fig.cap="Netzwerk Visualisierung 3", message=FALSE, warning=FALSE}
 # coord diagramm
 ggraph(net_exp, layout = 'linear', circular = TRUE) + 
   geom_node_point(colour="#e2001a") +
   geom_edge_arc(alpha = .4) +
+  geom_node_label(aes(label=ifelse(name == "9", name, NA))) +
   theme_graph()
 ```
+
+
 
 
 \newpage
