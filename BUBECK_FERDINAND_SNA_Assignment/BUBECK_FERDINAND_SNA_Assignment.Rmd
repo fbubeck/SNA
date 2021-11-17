@@ -1,6 +1,6 @@
 ---
 title: Amazon Network Analysis
-subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analyis'
+subtitle: Assignment im Rahmen der Vorlesung 'Social Network Analysis'
 author: Ferdinand Bubeck
 date: "`r Sys.Date()`"
 output:
@@ -13,7 +13,6 @@ output:
     toc: yes
     toc_depth: 3
   html_document:
-    
     highlight: tango
     number_sections: yes
     theme: united
@@ -269,19 +268,29 @@ ggraph(net_exp, layout = 'linear', circular = TRUE) +
   geom_node_label(aes(label=ifelse(name == "9", name, NA))) +
   theme_graph()
 ```
-
+Für eine bessere Lesbarkeit wurden in diesem Plot die Knoten als Kreis dargestellt. So sieht man die Verbindungen der Kanten zwischen den Knoten besser. Auch hier wurde der Knoten Nummer 9 (Produkt 9) markiert. Er hat den höchsten Knotengrad (Grad = 16).
 
 
 
 \newpage
 
 # Fazit
+Abschließend lässt sich sagen, dass der Umfang einer Netzerkanalyse sehr stark von den Daten und den dort enthaltenen Merkmalen abhängt. In diesem Fall waren lediglich die Knoten-IDs und eine Kantenliste vorhanden. Im Folgenden wird nun die Forschungsfrage basierend auf den erarbeiteten Erkennissen beantwortet. 
 
 ## Evaluation der Ergebnisse
-tbd
+Im Zuge des *Business Unterstandings* stellt der Autor die Fragen auf: \
+
+- Welche Produkte werden in Verbindung mit den meisten anderen Produkten gekauft?
+- Welche Produkte werden hauptsächlich eigenständig gekauft? \
+
+Um eine bessere Durchlaufzeit des Skriptes und eine bessere Lesbarkeit der Visualisierungen zu erreichen, entscheidet sich der Autor weiterhin dazu, eine Teilmenge des Gesamtdatensatzes zu analysieren. Für die folgenden Ergebnisse ist deshalb zu erwähnen, dass diese nur für die Teilmenge Gültigkeit besitzen.\
+Der Datensatz beinhaltet Knoten und Kanteninformationen zu Amazonprodukten, welche häufig miteinander zusammen gekauft werden. Um die erste Frage zu beantworten, wird die Knotengrad-Zentralität herangezogen. Je mehr Kanten ein Knoten besitzt, desto mehr wird dieser Artikel in Verbindung mit anderen gekauft. Bei der Analyse kam heraus, dass der Knoten Nummer 9 und damit der Artikel Nummer 9 den höchsten Knotengrad aufweist. Er ist also in der Teilmenge des Datensatzes der Artikel, der in Verbindung mit den meisten anderen Artikeln gekauft wird. Dies ist weiterhin für Amazon relevant, um das Cross-Selling dieses Artikels zu optimieren. Cross-Selling bedeutet laut Literatur: "Querverkauf ist die Ausnutzung einer Kundenbeziehung durch den zusätzlichen Verkauf von sich ergänzenden Produkten."\
+Die zweite Forschungsfrage kann nur bedingt beantwortet werden. Es gibt eine ganze Reihe an Produkten, welche nur einen Nachbarknoten (Kante zu einem Knoten) aufweisen. Aufgrund der Quantität dieser Produkte lässt sich allerdings für die betrachtete Teilmenge des Datensatz eine eindeutige Antwort treffen.
+
 
 ## kritische Reflexion
-tbd
+Da die Analyse nur auf einer Teilmenge des Datensatzes ausgeführt wurde, bilden die Ergebnisse nicht mehr die Wirklichkeit des Datensatzes ab. Aus diesem Grund soll die Netzwerkanalyse als experimentelle Analyse angesehen werden. Die Ergebnisse können keinenfalls als Ergebnisse des Datensatzes gesehen werden. In der Reslität müsste der gesamte Datensatz auf Knotengrad hin untersucht werden, um die Produkte zu finden, welche am meisten in Verbindung mit anderen gekauft werden.\
+Weiterhin ist anzumerken, dass dem Autor keine Zuordnungstabelle von Knoten-IDs zu realen Produktnamen vorliegt. Für weitere Marketing-Maßnahmen ist diese Zuorndung allerdings essenziell. Das Ergebnis dieser Arbeit bleibt deshalb nur bei Netzwerkstruktur-Aussagen.
 
 
 
