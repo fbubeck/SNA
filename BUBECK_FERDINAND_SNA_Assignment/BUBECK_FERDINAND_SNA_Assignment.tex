@@ -100,7 +100,7 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
-\usepackage{graphicx} \usepackage{fancyhdr} \pagestyle{fancy} \setlength\headheight{28pt} \fancyhead[L]{\includegraphics[width=2.5cm]{../Data/logo.png}} \fancyfoot[LE,RO]{Ferdinand Bubeck}
+\usepackage{graphicx} \usepackage{fancyhdr} \pagestyle{fancy} \setlength\headheight{28pt} \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}} \fancyfoot[LE,RO]{Ferdinand Bubeck}
 
 \title{Amazon Network Analysis}
 \usepackage{etoolbox}
@@ -111,7 +111,7 @@
 \makeatother
 \subtitle{Assignment im Rahmen der Vorlesung `Social Network Analyis'}
 \author{Ferdinand Bubeck}
-\date{2021-11-16}
+\date{2021-11-17}
 
 \begin{document}
 \maketitle
@@ -155,7 +155,7 @@ sich in diesem Projekt um ein PoC handelt, wird die letzte Phase
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\textwidth,height=\textheight]{../Data/CRISP-DM_Process_Diagram1.png}
+\includegraphics[width=0.5\textwidth,height=\textheight]{Data/CRISP-DM_Process_Diagram1.png}
 \caption{CRISP-DM (Source:
 \url{https://statistik-dresden.de/archives/1128}))}
 \end{figure}
@@ -249,7 +249,7 @@ Zum Einlesen der Daten kommt im Folgenden die Funktion
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{amazon <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\StringTok{"../Data/Amazon0302.txt"}\NormalTok{)}
+\NormalTok{amazon <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\StringTok{"Data/Amazon0302.txt"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -457,8 +457,8 @@ Datensatz verwendet.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{zentralituxe4tsmauxdf}{%
-\subsubsection{Zentralitätsmaß}\label{zentralituxe4tsmauxdf}}
+\hypertarget{zentralituxe4tsmauxdfe}{%
+\subsubsection{Zentralitätsmaße}\label{zentralituxe4tsmauxdfe}}
 
 Um die Fragestellung dieser Arbeit zu beantworten, müssen weitere
 Erkenntnisse über die Netzwerk-Struktur analysiert werden. Hierfür sind
@@ -467,13 +467,42 @@ Sinne des Maßes zu identifizieren. Der Autor hat sich für die
 Beantwortung der Fragestellung:\\
 \emph{Welche Produkte werden in Verbindung mit den meisten anderen
 Produkten gekauft?}\\
-für die Betweenness-Centrality entschieden. Ein Knoten hat einen hohen
-Betweenness-Wert, wenn dieser Knoten Bestandteil besonders vieler
-kürzester Wege ist und die jeweiligen Paare wenige andere kürzeste Wege
-haben, auf der der Knoten nicht enthalten ist. Für jedes Paar von Knoten
-wird daher der Anteil an kürzesten Wegen zwischen ihnen berechnet, die v
-enthalten. Diese Anteile werden für alle Paare von Knoten aufsummiert um
-die Betweennesszentralität von v zu berechnen.
+für die Degree-Centrality entschieden. Der Grad eines Knoten ist die
+Menge aller inzidenten Kanten. Somit wird ein Produkt mit einem hohen
+Grad in Verbindung mit vielen weiteren Produkten gekauft.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Degree Centrality}
+\NormalTok{centr_degree <-}\StringTok{ }\KeywordTok{degree}\NormalTok{(net_exp)}
+
+\NormalTok{df_centr_degree <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(centr_degree)}
+
+\NormalTok{top_}\DecValTok{5}\NormalTok{_degree <-}\StringTok{ }\NormalTok{df_centr_degree }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{top_n}\NormalTok{(}\DecValTok{5}\NormalTok{) }\OperatorTok{%>%}\StringTok{  }\CommentTok{# highest values}
+\StringTok{  }\KeywordTok{arrange}\NormalTok{(}\OperatorTok{-}\NormalTok{centr_degree)}
+
+\NormalTok{top_}\DecValTok{5}\NormalTok{_degree}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    centr_degree
+## 9            16
+## 8            12
+## 12           11
+## 14           11
+## 19           11
+## 24           11
+## 25           11
+## 31           11
+\end{verbatim}
+
+Zu sehen sind die top 5 Gradwerte der Teilmenge des Datensatzes. Dies
+bedeutet, dass Knoten Nummer 9 der Knoten ist, welcher die meisten
+Kanten zu anderen Knoten hat. In dieser Teilmenge des Datensatzes ist
+Knoten Nummer 9 das Produkt, welches am meisten in Verbindung mit
+anderen Produkten gekauft wird.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -488,34 +517,132 @@ die Betweennesszentralität von v zu berechnen.
 
 \NormalTok{df_centr_betweenness <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(centr_betweenness)}
 
-\NormalTok{top_}\DecValTok{5}\NormalTok{ <-}\StringTok{ }\NormalTok{df_centr_betweenness }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{top_n}\NormalTok{(}\DecValTok{5}\NormalTok{)  }\CommentTok{# highest values}
+\NormalTok{top_}\DecValTok{5}\NormalTok{_betweenness <-}\StringTok{ }\NormalTok{df_centr_betweenness }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{top_n}\NormalTok{(}\DecValTok{5}\NormalTok{) }\OperatorTok{%>%}\StringTok{  }\CommentTok{# highest values}
+\StringTok{  }\KeywordTok{arrange}\NormalTok{(}\OperatorTok{-}\NormalTok{centr_betweenness)}
 
-\NormalTok{top_}\DecValTok{5}
+\NormalTok{top_}\DecValTok{5}\NormalTok{_betweenness}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ##    centr_betweenness
 ## 9          1154.5000
-## 12          343.0667
 ## 21          585.7333
 ## 23          470.0000
 ## 31          428.7500
+## 12          343.0667
 \end{verbatim}
 
-Zu sehen sind die fünf Knoten der Teilmenge des Datensatzes mit den
-höchsten Betweenness-Zentralitätsmaßen. Dies bedeutet, dass Knoten
-Nummer 9 der Knoten ist, welcher die größte Bedeutung im Bezug auf die
-meisten kürzesten Wege hat. In dieser Teilmenge des Datensatzes ist
-Knoten Nummer 9 das Produkt, welches am meisten in Verbindung mit
-anderen Produkten gekauft wird.
+Auch die Betweenness-Zentralität gibt als zentralsten Knoten den Knoten
+Nummer 9 zurück. Betweenness misst das Ausmaß, in dem ein Knoten auf
+kürzesten Pfaden zwischen anderen Knoten im Graphen positioniert ist.
+Somit wird in dieser Teilmenge des Datensatzes der Knoten 9 und damit
+das Produkt Nummer 9 als am meisten mit anderen Produkten gekaufte
+Produkt verstanden.\\
+
+Um die Fragestellung \emph{Welche Produkte werden hauptsächlich
+eigenständig gekauft?} zu beantworten, werden im Folgenden die Top 5 der
+Knoten ausgegeben, welche die wenigsten Kanten zu Nachbarknoten haben.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lowest_}\DecValTok{5}\NormalTok{_degree <-}\StringTok{ }\NormalTok{df_centr_degree }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{top_n}\NormalTok{(}\OperatorTok{-}\DecValTok{5}\NormalTok{)  }\CommentTok{# lowest values}
+  
+\NormalTok{lowest_}\DecValTok{5}\NormalTok{_degree}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     centr_degree
+## 64             1
+## 65             1
+## 66             1
+## 67             1
+## 68             1
+## 291            1
+## 138            1
+## 139            1
+## 140            1
+## 261            1
+## 262            1
+## 263            1
+## 264            1
+## 265            1
+## 141            1
+## 142            1
+## 69             1
+## 70             1
+## 71             1
+## 72             1
+## 73             1
+## 75             1
+## 165            1
+## 112            1
+## 143            1
+## 266            1
+## 267            1
+## 268            1
+## 269            1
+## 77             1
+## 79             1
+## 80             1
+## 81             1
+## 82             1
+## 83             1
+## 144            1
+## 145            1
+## 146            1
+## 147            1
+## 148            1
+## 84             1
+## 85             1
+## 86             1
+## 149            1
+## 150            1
+## 151            1
+## 94             1
+## 95             1
+## 96             1
+## 152            1
+## 53             1
+## 54             1
+## 55             1
+## 56             1
+## 153            1
+## 154            1
+## 155            1
+## 156            1
+## 98             1
+## 270            1
+## 271            1
+## 272            1
+## 273            1
+## 274            1
+## 87             1
+## 88             1
+## 58             1
+## 59             1
+## 90             1
+## 91             1
+\end{verbatim}
+
+Wie zu erkennen ist, gibt es eine Vielzahl an Produkten, welche
+lediglich eine Kante besitzen und damit häufig in Verbindung mit einem
+weiteren Produkt gekauft werden. Es gibt allerdings keine Knoten, welche
+unabhängig sind und keine einzige Kante besitzen. Somit kann für diese
+Fragestellung kein eindeutiges Produkt identifiziert werden, welches
+eigenständig gekauft wird.
+
+\newpage
 
 \hypertarget{visualisierung}{%
 \subsubsection{Visualisierung}\label{visualisierung}}
 
 Um die Beziehungen des Knoten Nummer 9 besser verstehen zu können,
-werden im Folgenden drei Visualisierungen erstellt.\\
+werden im Folgenden drei Graph-Visualisierungen erstellt. Dabei ist
+Knoten 9 in jedem Graph mit seinem Namenslabel gekennzeichnet.\\
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -530,19 +657,30 @@ werden im Folgenden drei Visualisierungen erstellt.\\
 \end{Shaded}
 
 \includegraphics{BUBECK_FERDINAND_SNA_Assignment_files/figure-latex/unnamed-chunk-2-1.pdf}
+Anhand dieses Graphen kann man die Lage des Knoten 9 gut erkennen. Bei
+genauerem Betrachten kann man seine 16 Kanten zu weiteren Knoten
+erkennen. Die Visualisierung zeigt an den Randbereichen weiterhin alle
+Knoten mit nur einer einzigen Kante.
+
 \newpage
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggraph}\NormalTok{(net_exp, }\DataTypeTok{layout =} \StringTok{'kk'}\NormalTok{, }\DataTypeTok{maxiter =} \DecValTok{100}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\KeywordTok{ggraph}\NormalTok{(net_exp, }\DataTypeTok{layout =} \StringTok{'linear'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{geom_node_point}\NormalTok{(}\DataTypeTok{colour=}\StringTok{"#e2001a"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_edge_link}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{.4}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_edge_arc}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{.4}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_node_label}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label=}\KeywordTok{ifelse}\NormalTok{(name }\OperatorTok{==}\StringTok{ "9"}\NormalTok{, name, }\OtherTok{NA}\NormalTok{))) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme_graph}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics{BUBECK_FERDINAND_SNA_Assignment_files/figure-latex/unnamed-chunk-3-1.pdf}
+Anhand dieser Visualisierung kann man sehr gut erkennen, dass Knoten 9
+die meisten Verbindungen zu anderen Knoten besitzt. Alle Knoten sind bei
+diesem Layout sortiert auf einer Geraden angeordnet und die Kanten
+werden als Bögen dargestellt. So wird auch die Verbindung zu anderen
+Knotennummern sichtbar.
+
 \newpage
 
 \begin{Shaded}
@@ -556,11 +694,7 @@ werden im Folgenden drei Visualisierungen erstellt.\\
 \end{Highlighting}
 \end{Shaded}
 
-\begin{figure}
-\centering
 \includegraphics{BUBECK_FERDINAND_SNA_Assignment_files/figure-latex/unnamed-chunk-4-1.pdf}
-\caption{Netzwerk Visualisierung 3}
-\end{figure}
 
 \newpage
 

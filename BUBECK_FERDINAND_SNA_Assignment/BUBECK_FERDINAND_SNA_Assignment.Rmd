@@ -25,7 +25,7 @@ header-includes:
    \usepackage{fancyhdr}
    \pagestyle{fancy}
    \setlength\headheight{28pt}
-   \fancyhead[L]{\includegraphics[width=2.5cm]{../Data/logo.png}}
+   \fancyhead[L]{\includegraphics[width=2.5cm]{Data/logo.png}}
    \fancyfoot[LE,RO]{Ferdinand Bubeck}
 editor_options:
   chunk_output_type: console
@@ -47,7 +47,7 @@ Zielsetzung ist es, auf Basis der Daten eine Forschungsfrage zu überlegen und d
 ## Vorgehensweise
 Als Vorgehensweise wird in diesem Projekt das für das Feld Data Science etablierte Standard-Vorgehen CRISP-DM gewählt (Cross Industry Standard Process for Data Mining). In mehreren Phasen werden so von dem richtigen Verständnis der Daten, dem Data Wrangling und Data Preprocessing bis hin zum Modelfitting und der Evaluation alle entscheidenen Schritte strukturiert durchlaufen, um ein optimales Ergebnis aus den Daten zu generieren. In der Abbildung 1 ist das Vorgehensmodell abgebildet. Da es sich in diesem Projekt um ein PoC handelt, wird die letzte Phase 'Deployment' ausgelassen.
 
-![CRISP-DM (Source: https://statistik-dresden.de/archives/1128))](../Data/CRISP-DM_Process_Diagram1.png){width=50%}
+![CRISP-DM (Source: https://statistik-dresden.de/archives/1128))](Data/CRISP-DM_Process_Diagram1.png){width=50%}
 
 
 
@@ -92,7 +92,7 @@ Die Daten stammen aus der Datensatz-Bibliothek der Stanford University und könn
 Zum Einlesen der Daten kommt im Folgenden die Funktion \textit{read.table} zum Einsatz.\
 
 ```{r data}
-amazon <- read.table("../Data/Amazon0302.txt")
+amazon <- read.table("Data/Amazon0302.txt")
 ```
 
 ### Datenexploration
@@ -185,10 +185,25 @@ net_exp <- net_exp %>%
   )
 ```
 
-### Zentralitätsmaß 
+### Zentralitätsmaße
 Um die Fragestellung dieser Arbeit zu beantworten, müssen weitere Erkenntnisse über die Netzwerk-Struktur analysiert werden. Hierfür sind Zentralitätsmaße eine gute Anlaufstelle, um "wichtigere Knoten" im Sinne des Maßes zu identifizieren. Der Autor hat sich für die Beantwortung der Fragestellung:\
 *Welche Produkte werden in Verbindung mit den meisten anderen Produkten gekauft?*\
-für die Betweenness-Centrality entschieden. Ein Knoten hat einen hohen Betweenness-Wert, wenn dieser Knoten Bestandteil besonders vieler kürzester Wege ist und die jeweiligen Paare wenige andere kürzeste Wege haben, auf der der Knoten nicht enthalten ist. Für jedes Paar von Knoten wird daher der Anteil an kürzesten Wegen zwischen ihnen berechnet, die v enthalten. Diese Anteile werden für alle Paare von Knoten aufsummiert um die Betweennesszentralität von v zu berechnen.
+für die Degree-Centrality entschieden. Der Grad eines Knoten ist die Menge aller inzidenten Kanten. Somit wird ein Produkt mit einem hohen Grad in Verbindung mit vielen weiteren Produkten gekauft.
+
+
+```{r Degree Centrality, message=FALSE, warning=FALSE}
+# Degree Centrality
+centr_degree <- degree(net_exp)
+
+df_centr_degree <- as.data.frame(centr_degree)
+
+top_5_degree <- df_centr_degree %>% 
+  top_n(5) %>%  # highest values
+  arrange(-centr_degree)
+
+top_5_degree
+```
+Zu sehen sind die top 5 Gradwerte der Teilmenge des Datensatzes. Dies bedeutet, dass Knoten Nummer 9 der Knoten ist, welcher die meisten Kanten zu anderen Knoten hat. In dieser Teilmenge des Datensatzes ist Knoten Nummer 9 das Produkt, welches am meisten in Verbindung mit anderen Produkten gekauft wird.
 
 ```{r Betweenness Centrality, message=FALSE, warning=FALSE}
 # Betweenness Centrality
@@ -202,17 +217,29 @@ centr_betweenness <- betweenness(
 
 df_centr_betweenness <- as.data.frame(centr_betweenness)
 
-top_5 <- df_centr_betweenness %>% 
-  top_n(5)  # highest values
+top_5_betweenness <- df_centr_betweenness %>% 
+  top_n(5) %>%  # highest values
+  arrange(-centr_betweenness)
 
-top_5
+top_5_betweenness
 ```
-Zu sehen sind die fünf Knoten der Teilmenge des Datensatzes mit den höchsten Betweenness-Zentralitätsmaßen. Dies bedeutet, dass Knoten Nummer 9 der Knoten ist, welcher die größte Bedeutung im Bezug auf die meisten kürzesten Wege hat. In dieser Teilmenge des Datensatzes ist Knoten Nummer 9 das Produkt, welches am meisten in Verbindung mit anderen Produkten gekauft wird.
+Auch die Betweenness-Zentralität gibt als zentralsten Knoten den Knoten Nummer 9 zurück. Betweenness misst das Ausmaß, in dem ein Knoten auf kürzesten Pfaden zwischen anderen Knoten im Graphen positioniert ist. Somit wird in dieser Teilmenge des Datensatzes der Knoten 9 und damit das Produkt Nummer 9 als am meisten mit anderen Produkten gekaufte Produkt verstanden.\
 
+Um die Fragestellung *Welche Produkte werden hauptsächlich eigenständig gekauft?* zu beantworten, werden im Folgenden die Top 5 der Knoten ausgegeben, welche die wenigsten Kanten zu Nachbarknoten haben.
+
+```{r lowest 5 degree, message=FALSE, warning=FALSE}
+lowest_5_degree <- df_centr_degree %>% 
+  top_n(-5)  # lowest values
+  
+lowest_5_degree
+```
+Wie zu erkennen ist, gibt es eine Vielzahl an Produkten, welche lediglich eine Kante besitzen und damit häufig in Verbindung mit einem weiteren Produkt gekauft werden. Es gibt allerdings keine Knoten, welche unabhängig sind und keine einzige Kante besitzen. Somit kann für diese Fragestellung kein eindeutiges Produkt identifiziert werden, welches eigenständig gekauft wird.
+
+\newpage
 ### Visualisierung
-Um die Beziehungen des Knoten Nummer 9 besser verstehen zu können, werden im Folgenden drei Visualisierungen erstellt.\
+Um die Beziehungen des Knoten Nummer 9 besser verstehen zu können, werden im Folgenden drei Graph-Visualisierungen erstellt. Dabei ist Knoten 9 in jedem Graph mit seinem Namenslabel gekennzeichnet.\
 
-```{r fig.cap="Netzwerk Visualisierung 1", message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 # Data Viz for Subset
 # network diagramm
 ggraph(net_exp, layout = 'fr', maxiter = 100) + 
@@ -221,16 +248,20 @@ ggraph(net_exp, layout = 'fr', maxiter = 100) +
   geom_node_label(aes(label=ifelse(name == "9", name, NA))) +
   theme_graph()
 ```
+Anhand dieses Graphen kann man die Lage des Knoten 9 gut erkennen. Bei genauerem Betrachten kann man seine 16 Kanten zu weiteren Knoten erkennen. Die Visualisierung zeigt an den Randbereichen weiterhin alle Knoten mit nur einer einzigen Kante.
+
 \newpage
-```{r fig.cap="Netzwerk Visualisierung 2", message=FALSE, warning=FALSE}
-ggraph(net_exp, layout = 'kk', maxiter = 100) + 
+```{r message=FALSE, warning=FALSE}
+ggraph(net_exp, layout = 'linear') + 
   geom_node_point(colour="#e2001a") + 
-  geom_edge_link(alpha = .4) +
+  geom_edge_arc(alpha = .4) +
   geom_node_label(aes(label=ifelse(name == "9", name, NA))) +
   theme_graph()
 ```
+Anhand dieser Visualisierung kann man sehr gut erkennen, dass Knoten 9 die meisten Verbindungen zu anderen Knoten besitzt. Alle Knoten sind bei diesem Layout sortiert auf einer Geraden angeordnet und die Kanten werden als Bögen dargestellt. So wird auch die Verbindung zu anderen Knotennummern sichtbar.
+
 \newpage
-```{r fig.cap="Netzwerk Visualisierung 3", message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 # coord diagramm
 ggraph(net_exp, layout = 'linear', circular = TRUE) + 
   geom_node_point(colour="#e2001a") +
